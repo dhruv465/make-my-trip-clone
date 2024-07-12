@@ -1,5 +1,3 @@
-Certainly! Here's the structured guide without unnecessary whitespace:
-
 ### Cloning the Repository
 
 1. **Clone the Repository**:
