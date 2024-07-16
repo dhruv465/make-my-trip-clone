@@ -7,8 +7,8 @@ import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
 import Tab, { tabClasses } from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
-import EmailSignupForm from '../Mycomponents/EmailSignupForm';
-import MobileSignupForm from '../Mycomponents/MobileSignupForm';
+import EmailSignupForm from '../Mycomponents/Home/EmailSignupForm';
+import MobileSignupForm from '../Mycomponents/Home/MobileSignupForm';
 
 
 export default function UserLogIn({ open, setOpen }) {

@@ -2,7 +2,8 @@ import React from 'react';
 import Home from './pages/Home';
 import './App.css';
 import toast, { Toaster } from 'react-hot-toast';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Use Routes instead of Switch
+import SearchResult from './pages/FlightDetails';
 
 
 
@@ -11,7 +12,12 @@ function App() {
     <>
       <Toaster position="top-right"
         reverseOrder={false} />
-      <Home />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/search-results" element={<SearchResult />} />
+        </Routes>
+      </Router>   
     </>
   );
 }

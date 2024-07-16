@@ -1,14 +1,14 @@
 import React from 'react'
-import Header from '../Mycomponents/Header';
-import SearchForm from '../Mycomponents/SearchForm';
-import bgImg from '../assets/bg.jpg'
-import Explore from '../Mycomponents/Explore';
-import Promotions from '../Mycomponents/Promotions';
-import Offers from '../Mycomponents/Offers';
-import Footer from '../Mycomponents/Footer';
-import FAQSection from '../Mycomponents/FAQSection';
-import AppDownloadWrapper from '../Mycomponents/AppDownloadWrapper';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Header from '../Mycomponents/Home/Header';
+import SearchForm from '../Mycomponents/Home/SearchForm';
+import bgImg from '.././assets/bg.jpg';
+import Explore from '../Mycomponents/Home/Explore';
+import Promotions from '../Mycomponents/Home/Promotions';
+import Offers from '../Mycomponents/Home/Offers';
+import Footer from '../Mycomponents/Home/Footer';
+import FAQSection from '../Mycomponents/Home/FAQSection';
+import AppDownloadWrapper from '../Mycomponents/Home/AppDownloadWrapper';
+
 
 const Home = () => {
   return (

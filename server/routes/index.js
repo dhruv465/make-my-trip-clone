@@ -9,9 +9,13 @@ const { sendVerificationEmail } = require('../services/emailService');
 const { OAuth2Client } = require('google-auth-library');
 const { sendOTP } = require('../services/smsService');
 const router = express.Router();
-
+const Flight = require('../models/Flight');
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
+
+const clientId = 'WKAMP1ibp0JPOF4CPoKygURpDanG3ouT';
+const clientSecret = 'GwnqvBtGmDwUSSCn';
+let accessToken = null;
 
 // Middleware to enable CORS
 router.use(cors());
@@ -229,23 +233,15 @@ router.get('/user', authenticateJWT, async (req, res) => {
     }
 });
 
-// API key for Amadeus
-const API_KEY = 'WKAMP1ibp0JPOF4CPoKygURpDanG3ouT';
-
-// Endpoint to fetch flight offers
+// Route to get all flight details
 router.get('/flights', async (req, res) => {
     try {
-        const response = await axios.get('https://api.amadeus.com/v1/shopping/flight-offers', {
-            params: req.query,
-            headers: {
-                'Authorization': `Bearer ${API_KEY}`
-            }
-        });
-        res.send(response.data);
-    } catch (error) {
-        console.error('Error fetching flight data:', error);
-        res.status(error.response ? error.response.status : 500).send(error.message);
+        const flights = await Flight.find();
+        res.json(flights);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
+
 
 module.exports = router;

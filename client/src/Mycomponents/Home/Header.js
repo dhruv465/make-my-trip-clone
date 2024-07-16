@@ -1,10 +1,10 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useState } from 'react';
-import logo from '../assets/makemytrip.png';
+import logo from '../../assets/makemytrip.png';
 import { FaUser } from 'react-icons/fa';
-import UserLogIn from '../modals/UserLogIn';
-import LogoutModal from '../modals/LogoutModal';
+import UserLogIn from '../../modals/UserLogIn';
+import LogoutModal from '../../modals/LogoutModal';
 import { FaAngleDown } from "react-icons/fa";
 
 const Header = () => {

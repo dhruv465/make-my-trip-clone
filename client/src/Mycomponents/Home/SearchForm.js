@@ -9,6 +9,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchForm() {
   const [selectedFare, setSelectedFare] = useState(null);
@@ -22,7 +23,9 @@ export default function SearchForm() {
   const [returnDate, setReturnDate] = useState(null);
   const [departureCity, setDepartureCity] = useState('');
   const [destinationCity, setDestinationCity] = useState('');
-  const [flights, setFlights] = useState([]);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
 
   const handleFareSelection = (index) => {
     setSelectedFare(index);
@@ -51,81 +54,123 @@ export default function SearchForm() {
 
   const handleDepartureDateChange = (date) => {
     setDepartureDate(date);
-    setReturnDate(date); // Adjust return date automatically to departure date
+    setReturnDate(date);
   };
 
   const handleReturnDateChange = (date) => {
     setReturnDate(date);
   };
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
+
+  const searchFlights = async (departureCity, destinationCity, departureDate, returnDate) => {
     try {
-      const response = await axios.get('http://localhost:8080/api/flights', {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/flights`, {
         params: {
-          originLocationCode: departureCity,
-          destinationLocationCode: destinationCity,
-          departureDate: departureDate.toISOString().split('T')[0],
-          returnDate: returnDate ? returnDate.toISOString().split('T')[0] : undefined,
-          adults,
-          children,
-          infants,
-          travelClass: travelClass.replace('/', '_').toUpperCase(),
-        }
+          departureCity,
+          destinationCity,
+          departureDate: departureDate.toISOString(),
+          returnDate: returnDate ? returnDate.toISOString() : null,
+        },
+        withCredentials: true, // Ensure credentials are sent with the request if needed
       });
-      setFlights(response.data);
+
+      return response.data;
     } catch (error) {
-      console.error('Error fetching flight data:', error);
+      console.error('Error fetching flights:', error);
+      throw new Error('Failed to fetch flights.');
     }
   };
 
-  return (
-    <div className="mx-auto lg:py-32 sm:py-14 py-14">
-      <div className="lg:p-6 p-4">
-        <form onSubmit={handleSearch}>
-          <div className="container shadow-lg mx-auto bg-white py-11 rounded-md max-w-7xl px-6 lg:px-8 sm:block">
-            <div className="text-center bg-white shadow-lg -mt-20 p-3 mb-3 rounded-md sm:block">
-              <div className="flex space-x-16 items-center">
-                <a href="#flights" title="Flights" className="flex flex-col items-center text-blue-500 pr-3">
-                  <MdFlightTakeoff size={25} />
-                  <span className="mt-1 text-sm">Flights</span>
-                </a>
-                <a href="#hotels" title="Hotels" className="flex flex-col items-center pr-3">
-                  <LiaHotelSolid size={25} />
-                  <span className="mt-1 text-sm">Hotels</span>
-                </a>
-                <a href="#homestays" title="Homestays & Villas" className="flex flex-col items-center pr-3">
-                  <MdMapsHomeWork size={25} />
-                  <span className="mt-1 text-sm">Homestays & Villas</span>
-                </a>
-                <a href="#holiday-packages" title="Holiday Packages" className="flex flex-col items-center pr-3">
-                  <TbBeach size={25} />
-                  <span className="mt-1 text-sm">Holiday Packages</span>
-                </a>
-                <a href="#trains" title="Trains" className="flex flex-col items-center pr-3">
-                  <LiaTrainSolid size={25} />
-                  <span className="mt-1 text-sm">Trains</span>
-                </a>
-                <a href="#buses" title="Buses" className="flex flex-col items-center pr-3">
-                  <LiaBusSolid size={25} />
-                  <span className="mt-1 text-sm">Buses</span>
-                </a>
-                <a href="#cabs" title="Cabs" className="flex flex-col items-center pr-3">
-                  <LiaCarSolid size={25} />
-                  <span className="mt-1 text-sm">Cabs</span>
-                </a>
-                <a href="#forex" title="Forex Card & Currency" className="flex flex-col items-center">
-                  <RiCurrencyLine size={25} />
-                  <span className="mt-1 text-sm">Forex Card & Currency</span>
-                </a>
-                <a href="#travel-insurance" title="Travel Insurance" className="flex flex-col items-center pr-20">
-                  <CiMedicalClipboard size={25} />
-                  <span className="mt-1 text-sm">Travel Insurance</span>
-                </a>
-              </div>
-            </div>
+  const handleSearch = async (event) => {
+    event.preventDefault();
 
-            <div className="mb-4 cursor-pointer flex flex-wrap">
+    try {
+      const data = await searchFlights(departureCity, destinationCity, departureDate, returnDate);
+      navigate('/search-results', {
+        state: {
+          flights: data,
+          searchParams: {
+            departureCity,
+            destinationCity,
+            departureDate,
+            returnDate,
+            adults,
+            children,
+            infants,
+            travelClass,
+          },
+        },
+      });
+      setError('');
+    } catch (error) {
+      console.error('Error fetching flight data:', error);
+      setError('Error fetching flight data. Please try again.');
+      navigate('/search-results', {
+        state: {
+          error: 'Error fetching flight data. Please try again.',
+          searchParams: {
+            departureCity,
+            destinationCity,
+            departureDate,
+            returnDate,
+            adults,
+            children,
+            infants,
+            travelClass,
+          },
+        },
+      });
+    }
+  };
+
+
+  return (
+    <div className="mx-auto py-8 sm:py-12 lg:py-32">
+      <div className="p-4 sm:px-6 lg:p-6">
+        <div className="container mx-auto bg-white rounded-md shadow-lg max-w-7xl">
+
+          <div className="text-center bg-white shadow-lg -mt-8 p-3 rounded-md overflow-x-auto">
+            <div className="flex space-x-4 sm:space-x-8 lg:space-x-16 items-center">
+              <a href="#flights" title="Flights" className="flex flex-col items-center text-blue-500 pr-3">
+                <MdFlightTakeoff size={25} />
+                <span className="mt-1 text-sm">Flights</span>
+              </a>
+              <a href="#hotels" title="Hotels" className="flex flex-col items-center pr-3">
+                <LiaHotelSolid size={25} />
+                <span className="mt-1 text-sm">Hotels</span>
+              </a>
+              <a href="#homestays" title="Homestays & Villas" className="flex flex-col items-center pr-3">
+                <MdMapsHomeWork size={25} />
+                <span className="mt-1 text-sm">Homestays & Villas</span>
+              </a>
+              <a href="#holiday-packages" title="Holiday Packages" className="flex flex-col items-center pr-3">
+                <TbBeach size={25} />
+                <span className="mt-1 text-sm">Holiday Packages</span>
+              </a>
+              <a href="#trains" title="Trains" className="flex flex-col items-center pr-3">
+                <LiaTrainSolid size={25} />
+                <span className="mt-1 text-sm">Trains</span>
+              </a>
+              <a href="#buses" title="Buses" className="flex flex-col items-center pr-3">
+                <LiaBusSolid size={25} />
+                <span className="mt-1 text-sm">Buses</span>
+              </a>
+              <a href="#cabs" title="Cabs" className="flex flex-col items-center pr-3">
+                <LiaCarSolid size={25} />
+                <span className="mt-1 text-sm">Cabs</span>
+              </a>
+              <a href="#forex" title="Forex Card & Currency" className="flex flex-col items-center">
+                <RiCurrencyLine size={25} />
+                <span className="mt-1 text-sm">Forex Card & Currency</span>
+              </a>
+              <a href="#travel-insurance" title="Travel Insurance" className="flex flex-col items-center pr-20">
+                <CiMedicalClipboard size={25} />
+                <span className="mt-1 text-sm">Travel Insurance</span>
+              </a>
+            </div>
+          </div>
+          <form onSubmit={handleSearch} className="p-4 sm:p-6 lg:p-8">
+            <div className="mb-4 flex flex-wrap gap-4">
               <label className="inline-flex items-center cursor-pointer ">
                 <input type="radio" className="form-radio peer" name="tripType" value="oneWay" />
                 <span className="ml-2 peer-checked:bg-blue-50 peer-checked:font-bold peer-checked:text-black px-2 py-1 text-xs rounded-full">One Way</span>
@@ -140,76 +185,70 @@ export default function SearchForm() {
               </label>
             </div>
 
-            <div className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-5 border-lack rounded-md p-2 cursor-pointer ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 border rounded-md p-2">
               {/* From Section */}
-              <div className="flex flex-col items-start lg:border-r md: ">
+              <div className="flex flex-col items-start lg:border-r">
                 <div className="text-gray-500">From</div>
-                <div className="text-xl font-bold">
+                <div className="text-xl font-bold w-full">
                   <input
                     type="text"
                     placeholder="Enter City or Airport"
-                    className="border-none focus:outline-none right-2  w-48 text-ellipsis line-clamp-1"
+                    className="border-none focus:outline-none w-full"
                     value={departureCity}
                     onChange={(e) => setDepartureCity(e.target.value)}
                   />
                 </div>
-                <div className="text-sm text-gray-500 "></div>
               </div>
 
               {/* To Section */}
-              <div className="flex flex-col items-start lg:border-r  ml-4">
+              <div className="flex flex-col items-start lg:border-r">
                 <div className="text-gray-500">To</div>
-                <div className="text-xl font-bold">
+                <div className="text-xl font-bold w-full">
                   <input
                     type="text"
                     placeholder="Enter City or Airport"
-                    className="border-none focus:outline-none right-2 w-48 text-ellipsis line-clamp-1"
+                    className="border-none focus:outline-none w-full"
                     value={destinationCity}
                     onChange={(e) => setDestinationCity(e.target.value)}
                   />
                 </div>
-                <div className="text-sm text-gray-500 "></div>
               </div>
 
               {/* Departure Section */}
               <div className="flex flex-col items-start lg:border-r">
-                <div className="text-gray-500">Departure <span className="absolute text-blue-500 justify-center items-center"><IoIosArrowDown /></span></div>
-                <div className="text-xl font-bold">
-                  <DatePicker
-                    selected={departureDate}
-                    onChange={handleDepartureDateChange}
-                    className="border-none w-52 focus:outline-none right-2"
-                  />
-                </div>
+                <div className="text-gray-500">Departure <IoIosArrowDown className="inline text-blue-500" /></div>
+                <DatePicker
+                  selected={departureDate}
+                  onChange={handleDepartureDateChange}
+                  className="border-none w-full focus:outline-none text-xl font-bold"
+                />
                 <div className="text-sm text-gray-500">Select a date</div>
               </div>
 
               {/* Return Section */}
               <div className="flex flex-col items-start lg:border-r">
-                <div className="text-gray-500">Return<span className="absolute text-blue-500 justify-center items-center"><IoIosArrowDown /></span></div>
-                <div className="text-xl font-bold">
-                  <DatePicker
-                    selected={returnDate}
-                    onChange={handleReturnDateChange}
-                    className="border-none focus:outline-none w-52 right-2"
-                    minDate={new Date(departureDate.getTime() + 24 * 60 * 60 * 1000)}
-                  />
-                </div>
+                <div className="text-gray-500">Return <IoIosArrowDown className="inline text-blue-500" /></div>
+                <DatePicker
+                  selected={returnDate}
+                  onChange={handleReturnDateChange}
+                  className="border-none w-full focus:outline-none text-xl font-bold"
+                  minDate={new Date(departureDate.getTime() + 24 * 60 * 60 * 1000)}
+                />
                 <div className="text-sm text-gray-500">Select a return date</div>
               </div>
 
               {/* Travelers & Class Section */}
               <div className="flex flex-col items-start" onClick={toggleModal}>
-                <div className="text-gray-500">Travelers & Class <span className="absolute text-blue-500 justify-center items-center"><IoIosArrowDown /></span></div>
-                <div className="text-2xl font-bold">{adults + children + infants} Travelers</div>
+                <div className="text-gray-500">Travelers & Class <IoIosArrowDown className="inline text-blue-500" /></div>
+                <div className="text-xl font-bold">{adults + children + infants} Travelers</div>
                 <div className="text-sm text-gray-500">{travelClass}</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 p-2 cursor-pointer">
-              <div className="m-3">
-                <h2 className="font-semibold flex items-center mt-2 text-sm">Select a special fare</h2>
-                <span className="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-md mb-3">
+            <div className="mt-6 mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="col-span-1 sm:col-span-2 lg:col-span-1">
+                <h2 className="font-semibold text-sm">Select a special fare</h2>
+                <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-md mt-2">
                   EXTRA SAVINGS
                 </span>
               </div>
@@ -218,8 +257,7 @@ export default function SearchForm() {
               {['Regular', 'Student', 'Senior Citizen', 'Doctor and Nurses'].map((fare, index) => (
                 <div
                   key={index}
-                  className={`flex gap-2 items-center border rounded-md pl-4 pr-4 h-12 mt-4 ml-2 cursor-pointer ${selectedFare === index + 1 ? 'bg-blue-50' : ''
-                    }`}
+                  className={`flex gap-2 items-center border rounded-md p-2 cursor-pointer ${selectedFare === index + 1 ? 'bg-blue-50' : ''}`}
                   onClick={() => handleFareSelection(index + 1)}
                 >
                   <input
@@ -237,19 +275,19 @@ export default function SearchForm() {
               ))}
             </div>
 
-            <div className="absolute inset-x-0 flex items-center justify-center">
-              <button type="submit" className="bg-blue-500 mt-6 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full lg:w-1/12">
+            <div className="absolute inset-x-0 flex items-center mt-3 justify-center">
+              <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full w-full sm:w-auto sm:px-8">
                 Search
               </button>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
 
       {/* Modal for Travelers & Class Selection */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex justify-center items-center z-50 bg-gray-800 bg-opacity-75">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 flex justify-center items-center z-50 bg-gray-800 bg-opacity-75 p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <div className="mb-4">
               <label className="block text-gray-700 text-sm mb-2">ADULTS (12y+)</label>
               <div className="flex">
@@ -319,27 +357,6 @@ export default function SearchForm() {
           </div>
         </div>
       )}
-
-      {/* Display Flights Results */}
-      <div className="mt-10">
-        {flights.length > 0 ? (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Available Flights</h2>
-            <ul>
-              {flights.map((flight, index) => (
-                <li key={index} className="mb-4 border p-4 rounded">
-                  <div>Airline: {flight.airline}</div>
-                  <div>Price: {flight.price.total}</div>
-                  <div>Departure: {flight.departure.iataCode} at {flight.departure.at}</div>
-                  <div>Arrival: {flight.arrival.iataCode} at {flight.arrival.at}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <div>No flights found.</div>
-        )}
-      </div>
     </div>
   );
 }

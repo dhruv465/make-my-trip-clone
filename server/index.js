@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 8080;
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
+
 // Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL, // Ensure this matches your React frontend URL
