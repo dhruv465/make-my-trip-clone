@@ -23,8 +23,9 @@ export default function SearchForm() {
   const [returnDate, setReturnDate] = useState(null);
   const [departureCity, setDepartureCity] = useState('');
   const [destinationCity, setDestinationCity] = useState('');
+  const [flights, setFlights] = useState([]);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize navigate
 
 
   const handleFareSelection = (index) => {
@@ -54,7 +55,8 @@ export default function SearchForm() {
 
   const handleDepartureDateChange = (date) => {
     setDepartureDate(date);
-    setReturnDate(date);
+    // Reset return date when departure date changes
+    setReturnDate(null);
   };
 
   const handleReturnDateChange = (date) => {
@@ -62,14 +64,20 @@ export default function SearchForm() {
   };
 
 
+
+
   const searchFlights = async (departureCity, destinationCity, departureDate, returnDate) => {
     try {
+      // Format dates to ISO strings ensuring they represent local time correctly
+      const formattedDepartureDate = departureDate.toISOString().split('T')[0];
+      const formattedReturnDate = returnDate ? returnDate.toISOString().split('T')[0] : null;
+
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/flights`, {
         params: {
           departureCity,
           destinationCity,
-          departureDate: departureDate.toISOString(),
-          returnDate: returnDate ? returnDate.toISOString() : null,
+          departureDate: formattedDepartureDate,
+          returnDate: formattedReturnDate,
         },
         withCredentials: true, // Ensure credentials are sent with the request if needed
       });
@@ -77,18 +85,25 @@ export default function SearchForm() {
       return response.data;
     } catch (error) {
       console.error('Error fetching flights:', error);
-      throw new Error('Failed to fetch flights.');
+      return []; // or return null; depending on your needs
     }
   };
 
-  const handleSearch = async (event) => {
+
+
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const data = await searchFlights(departureCity, destinationCity, departureDate, returnDate);
+      const flightsData = await searchFlights(departureCity, destinationCity, departureDate, returnDate);
+      setFlights(flightsData); // Update flights state with fetched data
+      setError(''); // Clear any previous error
+      
+      // Navigate to another page with the data (example: '/search-results')
       navigate('/search-results', {
         state: {
-          flights: data,
+          flights: flightsData,
           searchParams: {
             departureCity,
             destinationCity,
@@ -103,28 +118,13 @@ export default function SearchForm() {
       });
       setError('');
     } catch (error) {
-      console.error('Error fetching flight data:', error);
-      setError('Error fetching flight data. Please try again.');
-      navigate('/search-results', {
-        state: {
-          error: 'Error fetching flight data. Please try again.',
-          searchParams: {
-            departureCity,
-            destinationCity,
-            departureDate,
-            returnDate,
-            adults,
-            children,
-            infants,
-            travelClass,
-          },
-        },
-      });
+      console.error('Error fetching flights:', error);
+      setError('Failed to fetch flights. Please try again.'); // Handle error state
     }
   };
 
-
   return (
+    
     <div className="mx-auto py-8 sm:py-12 lg:py-32">
       <div className="p-4 sm:px-6 lg:p-6">
         <div className="container mx-auto bg-white rounded-md shadow-lg max-w-7xl">
@@ -169,7 +169,7 @@ export default function SearchForm() {
               </a>
             </div>
           </div>
-          <form onSubmit={handleSearch} className="p-4 sm:p-6 lg:p-8">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 lg:p-8">
             <div className="mb-4 flex flex-wrap gap-4">
               <label className="inline-flex items-center cursor-pointer ">
                 <input type="radio" className="form-radio peer" name="tripType" value="oneWay" />
@@ -281,6 +281,25 @@ export default function SearchForm() {
               </button>
             </div>
           </form>
+          {/* Display flight details */}
+          {flights.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold mb-4">Flight Details</h2>
+              {flights.map((flight, index) => (
+                <div key={index} className="border p-4 mb-4 rounded-md">
+                  <p className="text-lg font-semibold">Flight {index + 1}</p>
+                  <p>Departure City: {flight.departureCity}</p>
+                  <p>Destination City: {flight.destinationCity}</p>
+                  <p>Departure Date: {new Date(flight.departureDate).toLocaleDateString()}</p>
+                  <p>Return Date: {flight.returnDate ? new Date(flight.returnDate).toLocaleDateString() : 'N/A'}</p>
+                  {/* Add more flight details as needed */}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Error message */}
+          {error && <p className="text-red-500 mt-4">{error}</p>}
         </div>
       </div>
 

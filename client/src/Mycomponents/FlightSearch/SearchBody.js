@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { RxCrossCircled } from "react-icons/rx";
+import UserLogIn from '../../modals/UserLogIn';
 
 const SearchBody = () => {
   const [flights, setFlights] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
   const [min, setMin] = useState(0);
-  const [max, setMax] = useState(40000); // Assuming 10000 as the maximum price for example
+  const [max, setMax] = useState(40000); // Assuming 40000 as the maximum price for example
   const [value, setValue] = useState(max);
   const [isValueChanged, setIsValueChanged] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [open, setOpen] = useState(false); // State to control modal visibility
 
   const filters = [
     { label: "Hide Nearby Airports", price: "₹ 6,317" },
@@ -35,6 +38,14 @@ const SearchBody = () => {
     fetchFlights();
   }, []);
 
+  useEffect(() => {
+    // Check if JWT token is present in localStorage to determine login state
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const handleChange = (e) => {
     setValue(Number(e.target.value));
     setIsValueChanged(true);
@@ -49,6 +60,21 @@ const SearchBody = () => {
     setFilteredFlights(flights); // Reset filtered flights to all flights
     setValue(max); // Reset slider value to maximum
     setIsValueChanged(false); // Reset value changed flag
+  };
+
+  const bookNow = (id) => {
+    console.log(`Booking flight with ID: ${id}`);
+    if (!isLoggedIn) {
+      setOpen(true); // Open the login modal if not logged in
+    } else {
+      // Proceed with booking logic
+      // For demonstration, assume booking logic involves API calls, etc.
+      // Upon successful booking, you might redirect or show a success message
+    }
+  };
+
+  const closeModal = () => {
+    setOpen(false); // Function to close the login modal
   };
 
   const FlightCard = ({ _id, airline, departure, arrival, duration, price, stops, button }) => (
@@ -87,10 +113,6 @@ const SearchBody = () => {
     </div>
   );
 
-  const bookNow = (id) => {
-    console.log(`Booking flight with ID: ${id}`);
-    // Add logic to handle booking
-  };
 
   return (
     <div className="min-h-screen lg:-mt-24">
@@ -155,11 +177,8 @@ const SearchBody = () => {
                       <button
                         onClick={handleClearFilter}
                         className="flex justify-center items-center gap-1 bg-blue-50 text-gray-800 px-4 py-2 rounded-full text-sm"
-                      > 
-                      <RxCrossCircled 
-                      color='blue'
-                      size={20}
-                      />
+                      >
+                        <RxCrossCircled color='blue' size={20} />
                         Clear Filter
                       </button>
                     </div>
@@ -197,44 +216,15 @@ const SearchBody = () => {
                 </div>
                 <div className="p-4">
                   <h2 className="text-base font-semibold mb-2 bg-white p-4 rounded-sm shadow">Mumbai → Pune Thu, 18 Jul</h2>
-                  <FlightCard
-                    airline="Akasa Air, IndiGo"
-                    departure={{ time: "21:25", city: "Mumbai" }}
-                    arrival={{ time: "04:05", city: "Pune", nextDay: true }}
-                    duration="06h 40m"
-                    price="5,012"
-                    stops="1 stop via Ahme..."
-                    button={
-                      <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
-                        onClick={() => bookNow("1")} // Example ID
-                      >
-                        Book Now
-                      </button>
-                    }
-                  />
-                  <FlightCard
-                    airline="IndiGo"
-                    departure={{ time: "21:25", city: "Mumbai" }}
-                    arrival={{ time: "04:05", city: "Pune", nextDay: true }}
-                    duration="06h 40m"
-                    price="5,494"
-                    stops="1 stop via Ahme..."
-                    button={
-                      <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
-                        onClick={() => bookNow("2")} // Example ID
-                      >
-                        Book Now
-                      </button>
-                    }
-                  />
+                  {/* Example FlightCard components */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <UserLogIn open={open} setOpen={setOpen} closeModal={closeModal} onSuccessLogin={() => setIsLoggedIn(true)} />
+
     </div>
   );
 };

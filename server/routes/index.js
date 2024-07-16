@@ -232,6 +232,41 @@ router.get('/user', authenticateJWT, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+router.get('/flights', async (req, res) => {
+    const { departureCity, destinationCity, departureDate, returnDate } = req.query;
+
+    try {
+        let query = {
+            departureCity: { $regex: new RegExp(departureCity, 'i') },
+            destinationCity: { $regex: new RegExp(destinationCity, 'i') }
+        };
+
+        // Parse dates into Date objects
+        const parsedDepartureDate = departureDate ? new Date(departureDate) : null;
+        const parsedReturnDate = returnDate ? new Date(returnDate) : null;
+
+        if (parsedDepartureDate) {
+            // Adjust parsedDepartureDate to start of day (00:00:00) in UTC to avoid timezone discrepancies
+            parsedDepartureDate.setUTCHours(0, 0, 0, 0);
+            query.departureDate = { $gte: parsedDepartureDate };
+        }
+
+        if (parsedReturnDate) {
+            // Adjust parsedReturnDate to end of day (23:59:59) in UTC to avoid timezone discrepancies
+            parsedReturnDate.setUTCHours(23, 59, 59, 999);
+            query.returnDate = { $lte: parsedReturnDate };
+        }
+
+        const flights = await Flight.find(query);
+
+        res.json(flights);
+    } catch (error) {
+        console.error('Error fetching flights:', error);
+        res.status(500).json({ error: 'Failed to fetch flights' });
+    }
+});
+
+
 
 // Route to get all flight details
 router.get('/flights', async (req, res) => {
@@ -242,6 +277,7 @@ router.get('/flights', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
 
 
 module.exports = router;

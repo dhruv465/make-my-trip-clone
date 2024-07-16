@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect } from 'react';
 import Header from '../Mycomponents/Home/Header';
 import SearchForm from '../Mycomponents/Home/SearchForm';
 import bgImg from '.././assets/bg.jpg';
@@ -11,13 +11,34 @@ import AppDownloadWrapper from '../Mycomponents/Home/AppDownloadWrapper';
 
 
 const Home = () => {
+
+  // State to manage whether the header should be sticky
+  const [isSticky, setIsSticky] = useState(false);
+
+  // Function to handle scrolling and toggle sticky header
+  const handleScroll = () => {
+    if (window.scrollY > 0) {
+      setIsSticky(true);
+    } else {
+      setIsSticky(false);
+    }
+  };
+
+  // Effect to add scroll event listener on mount and clean up on unmount
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   return (
     <>
-
-      <Header />
+      <div className={`sticky top-0 z-50 ${isSticky ? 'bg-white shadow-md' : ''}`}>
+        <Header />
+      </div>
       <div className="relative">
         <img src={bgImg} className="w-100" alt="Background" />
-        <div className="lg:absolute -top-16 sm:start-auto lg:start-80 translate-middle w-75">
+        <div className="lg:absolute -top-16 sm:start-auto lg:start-80 translate-middle w-75 ">
           <SearchForm />
         </div>
       </div>
