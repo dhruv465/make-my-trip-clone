@@ -32,7 +32,7 @@ const Home = () => {
     };
   }, []);
   return (
-    <>
+    <div>
       <div className={`sticky top-0 z-50 ${isSticky ? 'bg-white shadow-md' : ''}`}>
         <Header />
       </div>
@@ -42,14 +42,25 @@ const Home = () => {
           <SearchForm />
         </div>
       </div>
-      <Explore />
-      <Offers />
-      <Promotions />
-      <AppDownloadWrapper />
-      <Footer />
-      <FAQSection />
-
-    </>
+      <div>
+        <Explore />
+      </div>
+      <div>
+        <Offers />
+      </div>
+      <div>
+        <Promotions />
+      </div>
+      <div>
+        <AppDownloadWrapper />
+      </div>
+      <div>
+        <Footer />
+      </div>
+      <div>
+        <FAQSection />
+      </div>
+    </div>
   )
 }
 
