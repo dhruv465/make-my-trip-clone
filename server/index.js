@@ -20,6 +20,8 @@ const client = new OAuth2Client(CLIENT_ID);
 // Middleware
 app.use(cors({
     origin: process.env.FRONTEND_URL, // Ensure this matches your React frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 app.use(express.json());
