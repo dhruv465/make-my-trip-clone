@@ -1,28 +1,67 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const UserProfileCard = () => {
-  return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-green-400 to-teal-500 p-4 flex justify-between items-center">
-        <h2 className="text-white font-bold text-lg">PERSONAL PROFILE</h2>
-        <div className="bg-white rounded-full p-2">
-          <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
+    const [userName, setUserName] = useState('');
+    const [userPicture, setUserPicture] = useState('');
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const fetchUserData = async () => {
+        try {
+            const jwtToken = localStorage.getItem('jwtToken');
+            if (!jwtToken) {
+                console.error('JWT token not found in localStorage');
+                return;
+            }
+
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${jwtToken}`,
+                },
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                setUser(userData);
+            } else {
+                console.error('Failed to fetch user data:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+    return (
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            {user ? (
+                <div className="bg-gradient-to-r from-green-400 to-teal-500 p-4 flex justify-between items-center">
+                    <h2 className="text-white font-bold text-lg">{user.name}</h2>
+                    <div className="bg-white rounded-full">
+                        <img className="w-12 h-12 rounded-full object-cover" src={user.picture} alt="User Profile" />
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-gradient-to-r from-green-400 to-teal-500 p-4 flex justify-between items-center">
+                    <h2 className="text-white font-bold text-lg">PERSONAL PROFILE</h2>
+                    <div className="bg-white rounded-full p-2">
+                        <svg className="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            )}
+
+            <div className="mt-auto pt-4 ">
+                <button className="px-6 py-2 text-sm text-white bg-red-600 m-2 rounded-full drop-shadow-md float-right">
+                    Delete Account
+                </button>
+            </div>
         </div>
-      </div>
-      <div className="divide-y divide-gray-200">
-        {['Profile', 'Login Details', 'Save Travellers', 'Logged In Devices', 'Logout'].map((item, index) => (
-          <a key={index} href="#" className="flex items-center px-6 py-3 hover:bg-gray-50">
-            <svg className="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-            <span className="text-gray-700">{item}</span>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
+    );
 };
 
 export default UserProfileCard;

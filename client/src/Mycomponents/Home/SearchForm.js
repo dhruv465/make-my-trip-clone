@@ -90,8 +90,6 @@ export default function SearchForm() {
   };
 
 
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -99,7 +97,7 @@ export default function SearchForm() {
       const flightsData = await searchFlights(departureCity, destinationCity, departureDate, returnDate);
       setFlights(flightsData); // Update flights state with fetched data
       setError(''); // Clear any previous error
-      
+
       // Navigate to another page with the data (example: '/search-results')
       navigate('/search-results', {
         state: {
@@ -124,7 +122,7 @@ export default function SearchForm() {
   };
 
   return (
-    
+
     <div className="mx-auto py-8 sm:py-12 lg:py-32">
       <div className="p-4 sm:px-6 lg:p-6">
         <div className="container mx-auto bg-white rounded-md shadow-lg max-w-7xl">
