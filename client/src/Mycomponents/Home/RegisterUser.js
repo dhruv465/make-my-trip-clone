@@ -22,7 +22,7 @@ const RegisterUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
-            alert('Passwords do not match!');
+            toast.error('Passwords do not match!');
             return;
         }
 
@@ -45,9 +45,10 @@ const RegisterUser = () => {
             }
         } catch (error) {
             console.error('Error registering:', error);
-            alert('Failed to register. Please try again.');
+            toast.error('Failed to register. Please try again.');
         }
     };
+
 
     const handleGoogleLoginSuccess = async (response) => {
         console.log('Google Login Success:', response);
