@@ -4,6 +4,7 @@ const cors = require('cors');
 const Joi = require('joi');
 const uuid = require('uuid').v4;
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { sendVerificationEmail } = require('../services/emailService');
 const { OAuth2Client } = require('google-auth-library');
@@ -38,94 +39,36 @@ const signupSchema = Joi.object({
     otp: Joi.string().length(6), // OTP can be optional depending on your flow
 });
 
+
 // POST /api/signup/email
 router.post('/signup/email', async (req, res) => {
-    const { error } = signupSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    }
-
     const { email, password } = req.body;
 
     try {
+        // Check if the email already exists
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ message: 'Email already exists. Please login.' });
         }
 
-        const verificationToken = uuid();
-        await sendVerificationEmail(email, verificationToken);
+        // Hash the password before saving
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Create a new user instance
         user = new User({
             email,
-            password, // You should hash the password here
-            verificationToken,
-            name: email.split('@')[0],
+            password: hashedPassword,
+            name: email.split('@')[0], // You might want to add a name field if available
         });
 
-        await user.save(); // Note: The user is saved but not yet verified
+        // Save the user to the database
+        await user.save();
 
-        res.status(200).json({ message: 'Verification email sent!' });
+        res.status(200).json({ message: 'Registration successful!' });
     } catch (error) {
         console.error('Error signing up with email:', error);
         res.status(500).json({ message: 'Failed to sign up with email.' });
-    }
-});
-
-// Verify email
-router.get('/verify/:token', async (req, res) => {
-    const { token } = req.params;
-
-    try {
-        const user = await User.findOne({ verificationToken: token });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid verification token.' });
-        }
-
-        user.isVerified = true;
-        user.verificationToken = undefined;
-        await user.save();
-
-        // Generate JWT token after verification
-        const jwtToken = jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        res.status(200).json({ token: jwtToken, user });
-    } catch (error) {
-        console.error('Error verifying email:', error);
-        res.status(500).json({ message: 'Failed to verify email.' });
-    }
-});
-
-
-// POST /api/verify/mobile
-router.post('/signup/mobile/verifyotp', async (req, res) => {
-    const { mobileNumber, otp } = req.body;
-
-    try {
-        const user = await User.findOne({ mobileNumber, otp });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid OTP or mobile number.' });
-        }
-
-        // Optionally mark user as verified or proceed with login logic
-        user.isVerified = true; // Example: Mark user as verified
-        await user.save();
-
-        // Generate JWT token after verification
-        const jwtToken = jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        res.status(200).json({ token: jwtToken, user });
-    } catch (error) {
-        console.error('Error verifying mobile:', error);
-        res.status(500).json({ message: 'Failed to verify mobile.' });
     }
 });
 

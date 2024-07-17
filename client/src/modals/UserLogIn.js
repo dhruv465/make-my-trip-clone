@@ -8,7 +8,7 @@ import TabList from '@mui/joy/TabList';
 import Tab, { tabClasses } from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
 import EmailSignupForm from '../Mycomponents/Home/EmailSignupForm';
-import MobileSignupForm from '../Mycomponents/Home/MobileSignupForm';
+import RegisterUser from '../Mycomponents/Home/RegisterUser';
 
 
 export default function UserLogIn({ open, setOpen }) {
@@ -60,68 +60,15 @@ export default function UserLogIn({ open, setOpen }) {
               },
             }}
           >
-            <Tab disableIndicator>PERSONAL ACCOUNT</Tab>
-            <Tab disableIndicator>MYBIZ ACCOUNT</Tab>
+            <Tab disableIndicator>LOGIN ACCOUNT</Tab>
+            <Tab disableIndicator>SIGN UP ACCOUNT</Tab>
 
           </TabList>
           <TabPanel value={0}>
-            <div>
-              {isEmailSignup ? (
-                <EmailSignupForm onSwitchToMobile={toggleSignupMethod} />
-              ) : (
-                <MobileSignupForm onSwitchToEmail={toggleSignupMethod} />
-              )}
-            </div>
+              <EmailSignupForm onSwitchToMobile={toggleSignupMethod} />
           </TabPanel>
           <TabPanel value={1}>
-            <div className="max-w-md mx-auto mt-6">
-              <h2 className="text-2xl font-bold mb-6">Login/Sign up</h2>
-
-              <form>
-                <div className="mb-4">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Work Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Enter your work email id"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Continue
-                </button>
-              </form>
-
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">
-                      Or use your business account with
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <button className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    <img className="h-5 w-5 mr-2" src="https://www.google.com/favicon.ico" alt="Google logo" />
-                    Google
-                  </button>
-                </div>
-              </div>
-
-              <p className="mt-4 text-xs text-gray-500 text-center">
-                By proceeding, you agree to MakeMyTrip's Terms and Privacy
-              </p>
-            </div>
+            <RegisterUser onSwitchToEmail={toggleSignupMethod} />
           </TabPanel>
         </Tabs>
       </Sheet>

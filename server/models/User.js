@@ -22,21 +22,11 @@ const userSchema = new Schema({
     password: {
         type: String,
     },
-    mobileNumber: {
-        type: String,
-        unique: true,
-        sparse: true,
-    },
-    otp: {
-        type: String,
-    },
     isVerified: {
         type: Boolean,
         default: false
     },
-    verificationToken: {
-        type: String,
-    }
+    
 });
 
 const User = mongoose.model('User', userSchema);
