@@ -17,12 +17,8 @@ const clientId = 'WKAMP1ibp0JPOF4CPoKygURpDanG3ouT';
 const clientSecret = 'GwnqvBtGmDwUSSCn';
 let accessToken = null;
 
-// Middleware to enable CORS with specific options
-const corsOptions = {
-    origin: 'https://make-my-trip-clone-lyart.vercel.app', // replace with your client's origin
-    credentials: true // to allow sending cookies and other credentials
-};
-router.use(cors(corsOptions));
+// Middleware to enable CORS
+router.use(cors());
 
 // Middleware to parse JSON bodies
 router.use(express.json());
