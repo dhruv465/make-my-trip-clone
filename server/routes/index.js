@@ -12,6 +12,7 @@ const router = express.Router();
 const Flight = require('../models/Flight');
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
+const Booking = require('../models/Booking'); // Import Booking model
 
 const clientId = 'WKAMP1ibp0JPOF4CPoKygURpDanG3ouT';
 const clientSecret = 'GwnqvBtGmDwUSSCn';
@@ -161,22 +162,22 @@ router.post('/signup/mobile/verifyotp', async (req, res) => {
 // Middleware to verify JWT token
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
-
+  
     if (authHeader) {
-        const token = authHeader.split(' ')[1];
-
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.sendStatus(403); // Forbidden
-            }
-
-            req.user = user;
-            next();
-        });
+      const token = authHeader.split(' ')[1];
+  
+      jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+          return res.sendStatus(403); // Forbidden
+        }
+  
+        req.user = user;
+        next();
+      });
     } else {
-        res.sendStatus(401); // Unauthorized
+      res.sendStatus(401); // Unauthorized
     }
-};
+  };
 
 // POST /api/google/token
 router.post('/google/token', async (req, res) => {
@@ -266,8 +267,6 @@ router.get('/flights', async (req, res) => {
     }
 });
 
-
-
 // Route to get all flight details
 router.get('/flights', async (req, res) => {
     try {
@@ -278,6 +277,26 @@ router.get('/flights', async (req, res) => {
     }
 });
 
+
+// POST /api/bookings - Example endpoint for creating a booking
+router.post('/bookings', authenticateJWT, async (req, res) => {
+    const { userId } = req.user; // Extract userId from authenticated request
+    const { flightId, flightDetails } = req.body;
+  
+    try {
+      const booking = new Booking({
+        userId: userId,
+        flightId: flightId,
+        flightDetails: flightDetails,
+      });
+  
+      await booking.save();
+      res.status(201).json({ message: 'Your flight booked successfully' });
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      res.status(500).json({ message: 'Failed to create booking' });
+    }
+  });
 
 
 module.exports = router;
