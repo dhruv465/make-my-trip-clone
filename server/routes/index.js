@@ -39,30 +39,33 @@ const signupSchema = Joi.object({
     otp: Joi.string().length(6), // OTP can be optional depending on your flow
 });
 
-
-// POST /api/signup/email
 router.post('/signup/email', async (req, res) => {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required.' });
+    }
+
     try {
-        // Check if the email already exists
+        console.log('Checking if email already exists:', email);
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ message: 'Email already exists. Please login.' });
         }
 
-        // Hash the password before saving
+        console.log('Generating salt for password hashing.');
         const salt = await bcrypt.genSalt(10);
+        console.log('Hashing password.');
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Create a new user instance
+        console.log('Creating new user.');
         user = new User({
             email,
             password: hashedPassword,
-            name: email.split('@')[0], // You might want to add a name field if available
+            name: email.split('@')[0],
         });
 
-        // Save the user to the database
+        console.log('Saving new user to the database.');
         await user.save();
 
         res.status(200).json({ message: 'Registration successful!' });
@@ -71,6 +74,8 @@ router.post('/signup/email', async (req, res) => {
         res.status(500).json({ message: 'Failed to sign up with email.' });
     }
 });
+
+
 
 
 // Middleware to verify JWT token
