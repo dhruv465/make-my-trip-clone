@@ -12,20 +12,30 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Debugging
+console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
+
 // Initialize OAuth2Client
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
-
 // Middleware
 app.use(cors({
-    origin: process.env.FRONTEND_URL, // Ensure this matches your React frontend URL
+    origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Handle preflight OPTIONS requests
+app.options('*', cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 // Default route
 app.get('/', (req, res) => {
@@ -36,7 +46,6 @@ app.get('/', (req, res) => {
 
 // Endpoint to handle Google OAuth token
 app.use('/api', router); // Mount all routes under /api
-
 
 // Start server
 connectDB().then(() => {
