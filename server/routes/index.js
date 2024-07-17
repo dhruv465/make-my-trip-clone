@@ -73,34 +73,6 @@ router.post('/signup/email', async (req, res) => {
 });
 
 
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-
-    // Find user by email
-    const user = await User.findOne({ email });
-
-    if (!user) {
-        return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Generate JWT
-    const jwtToken = jwt.sign(
-        { userId: user._id },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-    );
-
-    res.json({ token });
-});
-
-
 // Middleware to verify JWT token
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
