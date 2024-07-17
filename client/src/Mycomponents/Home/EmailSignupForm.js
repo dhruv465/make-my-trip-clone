@@ -6,6 +6,8 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 
     const handleGoogleLoginSuccess = async (response) => {
         console.log('Google Login Success:', response);
@@ -70,7 +72,6 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
 
     const handleLogin = async () => {
         try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
             const loginResponse = await fetch(`${backendUrl}/api/login`, {
                 method: 'POST',
                 headers: {
