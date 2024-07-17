@@ -17,8 +17,12 @@ const clientId = 'WKAMP1ibp0JPOF4CPoKygURpDanG3ouT';
 const clientSecret = 'GwnqvBtGmDwUSSCn';
 let accessToken = null;
 
-// Middleware to enable CORS
-router.use(cors());
+// Middleware to enable CORS with specific options
+const corsOptions = {
+    origin: 'https://make-my-trip-clone-lyart.vercel.app', // replace with your client's origin
+    credentials: true // to allow sending cookies and other credentials
+};
+router.use(cors(corsOptions));
 
 // Middleware to parse JSON bodies
 router.use(express.json());
@@ -206,6 +210,8 @@ router.get('/user', authenticateJWT, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// POST /api/flights
 router.get('/flights', async (req, res) => {
     const { departureCity, destinationCity, departureDate, returnDate } = req.query;
 
@@ -273,7 +279,7 @@ router.post('/bookings', authenticateJWT, async (req, res) => {
 
 // GET /api/bookings - Fetch bookings for authenticated user
 router.get('/bookings', authenticateJWT, async (req, res) => {
-    const { userId } = req.user; // Extract userId from authenticated request
+    const { userId } = req.user;
 
     try {
         const bookings = await Booking.find({ userId }).populate('flightId');
