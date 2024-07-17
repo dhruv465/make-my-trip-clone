@@ -19,16 +19,12 @@ const RegisterUser = () => {
         setShowPasswordMatchMessage(password && e.target.value !== password);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (password !== confirmPassword) {
-            toast.error('Passwords do not match!');
-            return;
-        }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-        // Proceed with your API call to register the user
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/signup/email`, {
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const signupResponse = await fetch(`${backendUrl}/api/signup/email`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,16 +32,16 @@ const RegisterUser = () => {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (response.ok) {
+            if (signupResponse.ok) {
                 toast.success('User successfully registered!');
-                // Optionally redirect or handle success
+              
             } else {
-                const data = await response.json();
-                alert(data.message);
+                const errorData = await signupResponse.json();
+                toast.error(errorData.message || 'Failed to register user.');
             }
         } catch (error) {
-            console.error('Error registering:', error);
-            toast.error('Failed to register. Please try again.');
+            console.error('Error signing up with email:', error);
+            toast.error('Failed to sign up with email.');
         }
     };
 

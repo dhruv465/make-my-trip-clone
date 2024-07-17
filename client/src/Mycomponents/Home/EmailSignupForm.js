@@ -44,33 +44,9 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
         console.error('Google Login Failed:', error);
     };
 
-    const handleEmailSubmit = async (event) => {
-        event.preventDefault();
+   
 
-        try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
-            const signupResponse = await fetch(`${backendUrl}/api/signup/email`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (signupResponse.ok) {
-                toast.success('User successfully registered!');
-                await handleLogin();
-            } else {
-                const errorData = await signupResponse.json();
-                toast.error(errorData.message || 'Failed to register user.');
-            }
-        } catch (error) {
-            console.error('Error signing up with email:', error);
-            toast.error('Failed to sign up with email.');
-        }
-    };
-
-    const handleLogin = async () => {
+    const handleEmailSubmit = async () => {
         try {
             const loginResponse = await fetch(`${backendUrl}/api/login`, {
                 method: 'POST',
