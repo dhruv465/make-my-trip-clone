@@ -73,45 +73,31 @@ router.post('/signup/email', async (req, res) => {
 });
 
 
-// POST /api/login
-router.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
-    try {
-        // Check if the user exists
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password.' });
-        }
+    // Find user by email
+    const user = await User.findOne({ email });
 
-        // Compare the provided password with the stored hashed password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid email or password.' });
-        }
-
-        // Create a payload with user information
-        const payload = {
-            user: {
-                id: user.id,
-                email: user.email
-            }
-        };
-
-        // Sign the JWT token
-        jwt.sign(
-            payload,
-            config.get('jwtSecret'), // Get the secret key from config
-            { expiresIn: '1h' }, // Token expiration time
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token });
-            }
-        );
-    } catch (error) {
-        console.error('Error logging in:', error);
-        res.status(500).json({ message: 'Server error.' });
+    if (!user) {
+        return res.status(400).json({ message: 'Invalid email or password' });
     }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Generate JWT
+    const jwtToken = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+
+    res.json({ token });
 });
 
 

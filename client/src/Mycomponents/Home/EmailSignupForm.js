@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
+import axios from 'axios';
+
 
 const EmailSignupForm = ({ onSwitchToMobile }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,33 +47,26 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
     };
 
    
+    const handleEmailSubmit = async (e) => {
+        e.preventDefault();
 
-    const handleEmailSubmit = async () => {
         try {
-            const loginResponse = await fetch(`${backendUrl}/api/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/login`, { email, password });
+            const { token } = response.data;
 
-            if (loginResponse.ok) {
-                const data = await loginResponse.json();
-                const jwtToken = data.token;
+            // Store token in localStorage
+            localStorage.setItem('jwtToken', token);
 
-                localStorage.setItem('jwtToken', jwtToken);
-                console.log('Logged in successfully and JWT token stored:', jwtToken);
-            } else {
-                const errorData = await loginResponse.json();
-                toast.error(errorData.message || 'Failed to login.');
-            }
+            // Set token expiration time to 1 hour
+            const expirationTime = new Date().getTime() + 3600 * 1000; // 1 hour in milliseconds
+            localStorage.setItem('jwtTokenExpiration', expirationTime);
+
+            // Redirect or perform any other action after successful login
+            console.log('Login successful!');
         } catch (error) {
-            console.error('Error logging in:', error);
-            toast.error('Failed to login.');
+            console.error('Login failed:', error.response.data.message);
         }
     };
-
     return (
         <div className="max-w-md mx-auto mt-2">
             <h2 className="text-2xl font-bold mb-6">Log in</h2>
