@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
-import axios from 'axios';
-
 
 const EmailSignupForm = ({ onSwitchToMobile }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
-
 
     const handleGoogleLoginSuccess = async (response) => {
         console.log('Google Login Success:', response);
@@ -46,27 +42,59 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
         console.error('Google Login Failed:', error);
     };
 
-   
-    const handleEmailSubmit = async (e) => {
-        e.preventDefault();
+    const handleEmailSubmit = async (event) => {
+        event.preventDefault();
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/login`, { email, password });
-            const { token } = response.data;
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const signupResponse = await fetch(`${backendUrl}/api/signup/email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-            // Store token in localStorage
-            localStorage.setItem('jwtToken', token);
-
-            // Set token expiration time to 1 hour
-            const expirationTime = new Date().getTime() + 3600 * 1000; // 1 hour in milliseconds
-            localStorage.setItem('jwtTokenExpiration', expirationTime);
-
-            // Redirect or perform any other action after successful login
-            console.log('Login successful!');
+            if (signupResponse.ok) {
+                toast.success('User successfully registered!');
+                await handleLogin();
+            } else {
+                const errorData = await signupResponse.json();
+                toast.error(errorData.message || 'Failed to register user.');
+            }
         } catch (error) {
-            console.error('Login failed:', error.response.data.message);
+            console.error('Error signing up with email:', error);
+            toast.error('Failed to sign up with email.');
         }
     };
+
+    const handleLogin = async () => {
+        try {
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const loginResponse = await fetch(`${backendUrl}/api/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (loginResponse.ok) {
+                const data = await loginResponse.json();
+                const jwtToken = data.token;
+
+                localStorage.setItem('jwtToken', jwtToken);
+                console.log('Logged in successfully and JWT token stored:', jwtToken);
+            } else {
+                const errorData = await loginResponse.json();
+                toast.error(errorData.message || 'Failed to login.');
+            }
+        } catch (error) {
+            console.error('Error logging in:', error);
+            toast.error('Failed to login.');
+        }
+    };
+
     return (
         <div className="max-w-md mx-auto mt-2">
             <h2 className="text-2xl font-bold mb-6">Log in</h2>
