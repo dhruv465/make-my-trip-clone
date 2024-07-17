@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { sendVerificationEmail } = require('../services/emailService');
 const { OAuth2Client } = require('google-auth-library');
-const { sendOTP } = require('../services/smsService');
 const router = express.Router();
 const Flight = require('../models/Flight');
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -101,35 +100,6 @@ router.get('/verify/:token', async (req, res) => {
     }
 });
 
-// POST /api/signup/mobile
-router.post('/signup/mobile', async (req, res) => {
-    const { mobileNumber } = req.body;
-
-    try {
-        // Format mobile number to E.164 format (+countryCode + number)
-        const formattedMobileNumber = `+91${mobileNumber}`;
-
-        // Generate OTP
-        const OTP = generateOTP();
-
-        // Send OTP using Twilio 
-        await sendOTP(formattedMobileNumber, OTP); // Ensure formatted number is passed
-
-        // Save mobile number and OTP for verification
-        const user = new User({
-            name: 'Mobile User', // Placeholder value for name
-            email: `mobile_${Date.now()}@example.com`, // Placeholder value for email
-            mobileNumber: formattedMobileNumber,
-            otp: OTP,
-        });
-        await user.save();
-
-        res.status(200).json({ message: 'OTP sent successfully!' });
-    } catch (error) {
-        console.error('Error signing up with mobile:', error);
-        res.status(500).json({ message: 'Failed to sign up with mobile.' });
-    }
-});
 
 // POST /api/verify/mobile
 router.post('/signup/mobile/verifyotp', async (req, res) => {
@@ -162,22 +132,25 @@ router.post('/signup/mobile/verifyotp', async (req, res) => {
 // Middleware to verify JWT token
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
-  
+
     if (authHeader) {
-      const token = authHeader.split(' ')[1];
-  
-      jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-          return res.sendStatus(403); // Forbidden
-        }
-  
-        req.user = user;
-        next();
-      });
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            if (err) {
+                console.error('JWT verification error:', err);
+                return res.sendStatus(403); // Forbidden
+            }
+
+            req.user = user;
+            next();
+        });
     } else {
-      res.sendStatus(401); // Unauthorized
+        console.error('Authorization header missing');
+        res.sendStatus(401); // Unauthorized
     }
-  };
+};
+
 
 // POST /api/google/token
 router.post('/google/token', async (req, res) => {
@@ -278,25 +251,39 @@ router.get('/flights', async (req, res) => {
 });
 
 
-// POST /api/bookings - Example endpoint for creating a booking
+// POST /api/bookings 
 router.post('/bookings', authenticateJWT, async (req, res) => {
     const { userId } = req.user; // Extract userId from authenticated request
     const { flightId, flightDetails } = req.body;
-  
+
     try {
-      const booking = new Booking({
-        userId: userId,
-        flightId: flightId,
-        flightDetails: flightDetails,
-      });
-  
-      await booking.save();
-      res.status(201).json({ message: 'Your flight booked successfully' });
+        const booking = new Booking({
+            userId: userId,
+            flightId: flightId,
+            flightDetails: flightDetails,
+        });
+
+        await booking.save();
+        res.status(201).json({ message: 'Your flight booked successfully' });
     } catch (error) {
-      console.error('Error creating booking:', error);
-      res.status(500).json({ message: 'Failed to create booking' });
+        console.error('Error creating booking:', error);
+        res.status(500).json({ message: 'Failed to create booking' });
     }
-  });
+});
+
+// GET /api/bookings - Fetch bookings for authenticated user
+router.get('/bookings', authenticateJWT, async (req, res) => {
+    const { userId } = req.user; // Extract userId from authenticated request
+
+    try {
+        const bookings = await Booking.find({ userId }).populate('flightId');
+        res.status(200).json(bookings);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({ message: 'Failed to fetch bookings' });
+    }
+});
+
 
 
 module.exports = router;
