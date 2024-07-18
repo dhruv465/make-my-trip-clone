@@ -80,6 +80,7 @@ const SearchBody = () => {
     setOpenBooking(false); // Function to close the booking modal
   };
 
+
   const handlePayNow = async () => {
     console.log('Proceeding to payment with flight:', selectedFlight);
 
@@ -176,25 +177,7 @@ const SearchBody = () => {
               <div className="bg-white shadow rounded-sm overflow-hidden">
                 <div className="p-4">
                   <h2 className="text-lg font-semibold mb-4">Popular Filters</h2>
-                  <div className="space-y-2">
-                    {filters.map((filter, index) => (
-                      <div key={index} className="flex items-center justify-between">
-                        <label className="flex items-center cursor-pointer">
-                          <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600" />
-                          <span className="ml-2 text-sm text-gray-700">
-                            {filter.icon && (
-                              <img src={filter.icon} alt="" className="inline-block w-4 h-4 mr-2" />
-                            )}
-                            {filter.label}
-                          </span>
-                        </label>
-                        <span className="text-sm text-gray-600">{filter.price}</span>
-                      </div>
-                    ))}
-                    <p className="text-sm text-blue-600 cursor-pointer">+ 4 more</p>
-                  </div>
 
-                  <h2 className="text-lg font-semibold mt-6 mb-4">Price Range</h2>
                   <div className="mb-4">
                     <input
                       type="range"

@@ -36,9 +36,9 @@ const Home = () => {
       <div className={`sticky top-0 z-50 ${isSticky ? 'bg-white shadow-md' : ''}`}>
         <Header />
       </div>
-      <div className="relative">
+      <div className="relative lg:flex lg:justify-center">
         <img src={bgImg} className="w-100" alt="Background" />
-        <div className="lg:absolute -top-16 sm:start-auto lg:start-80 translate-middle w-75 ">
+        <div className="lg:absolute -top-16 sm:start-auto  w-75 ">
           <SearchForm />
         </div>
       </div>
