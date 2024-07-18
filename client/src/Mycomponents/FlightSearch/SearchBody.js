@@ -17,12 +17,6 @@ const SearchBody = () => {
   const [openBooking, setOpenBooking] = useState(false); // State to control booking modal visibility
   const [selectedFlight, setSelectedFlight] = useState(null); // State to hold selected flight details
 
-  const filters = [
-    { label: "Hide Nearby Airports", price: "₹ 6,317" },
-    { label: "Refundable Fares", price: "₹ 12,996" },
-    { label: "Air India", price: "₹ 16,040", icon: "https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/AI.png?v=19" },
-    { label: "Afternoon Departure", price: "₹ 12,289" },
-  ];
 
   useEffect(() => {
     const fetchFlights = async () => {
