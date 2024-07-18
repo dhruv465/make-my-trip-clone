@@ -202,18 +202,18 @@ router.get('/flights', async (req, res) => {
             destinationCity: { $regex: new RegExp(destinationCity, 'i') }
         };
 
-        // Parse dates into Date objects
+        
         const parsedDepartureDate = departureDate ? new Date(departureDate) : null;
         const parsedReturnDate = returnDate ? new Date(returnDate) : null;
 
         if (parsedDepartureDate) {
-            // Adjust parsedDepartureDate to start of day (00:00:00) in UTC to avoid timezone discrepancies
+          
             parsedDepartureDate.setUTCHours(0, 0, 0, 0);
             query.departureDate = { $gte: parsedDepartureDate };
         }
 
         if (parsedReturnDate) {
-            // Adjust parsedReturnDate to end of day (23:59:59) in UTC to avoid timezone discrepancies
+          
             parsedReturnDate.setUTCHours(23, 59, 59, 999);
             query.returnDate = { $lte: parsedReturnDate };
         }
@@ -241,7 +241,7 @@ router.get('/searchFlights', async (req, res) => {
     try {
         const { departureCity, destinationCity, departureDate, returnDate, selectedFare } = req.query;
 
-        // Construct the query object based on the parameters
+     
         let query = {
             departureCity: departureCity ? new RegExp(departureCity, 'i') : undefined,
             destinationCity: destinationCity ? new RegExp(destinationCity, 'i') : undefined,
@@ -259,7 +259,7 @@ router.get('/searchFlights', async (req, res) => {
             query.classSelection = { $regex: new RegExp(selectedFare, 'i') };
         }
 
-        // Remove undefined fields from the query
+       
         Object.keys(query).forEach(key => query[key] === undefined && delete query[key]);
 
         const flights = await Flight.find(query);

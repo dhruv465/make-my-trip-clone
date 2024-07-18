@@ -8,7 +8,6 @@ import { RiCurrencyLine } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const SearchForm = () => {
@@ -25,7 +24,7 @@ const SearchForm = () => {
   const [destinationCity, setDestinationCity] = useState('');
   const [flights, setFlights] = useState([]);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
   // const [tripType, setTripType] = useState('');
 
   const handleFareSelection = (index) => {
@@ -55,7 +54,7 @@ const SearchForm = () => {
 
   const handleDepartureDateChange = (date) => {
     setDepartureDate(date);
-    // Reset return date when departure date changes
+
     setReturnDate(null);
   };
 
@@ -238,25 +237,6 @@ const SearchForm = () => {
               </button>
             </div>
           </form>
-          {/* Display flight details
-          {flights.length > 0 && (
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">Flight Details</h2>
-              {flights.map((flight, index) => (
-                <div key={index} className="border p-4 mb-4 rounded-md">
-                  <p className="text-lg font-semibold">Flight {index + 1}</p>
-                  <p>Departure City: {flight.departureCity}</p>
-                  <p>Destination City: {flight.destinationCity}</p>
-                  <p>Departure Date: {new Date(flight.departureDate).toLocaleDateString()}</p>
-                  <p>Return Date: {flight.returnDate ? new Date(flight.returnDate).toLocaleDateString() : 'N/A'}</p>
-                  {/* Add more flight details as needed */}
-          {/* </div>
-              ))}
-            </div>
-          )} */}
-
-          {/* Error message */}
-          {/* {error && <p className="text-red-500 mt-4">{error}</p>} */}
         </div>
       </div>
 
