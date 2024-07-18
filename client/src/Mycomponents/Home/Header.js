@@ -8,7 +8,7 @@ import LogoutModal from '../../modals/LogoutModal';
 import { FaAngleDown } from "react-icons/fa";
 import { MdFlightTakeoff, MdSpaceDashboard } from 'react-icons/md';
 import { LiaHotelSolid } from 'react-icons/lia';
-import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useLocation, useNavigate } from 'react-router-dom'; 
 
 const Header = () => {
     const [open, setOpen] = useState(false);

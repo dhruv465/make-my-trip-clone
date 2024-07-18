@@ -5,6 +5,9 @@ import Details from '../Mycomponents/Dashboard/Details';
 import UserProfileCard from '../Mycomponents/Dashboard/UserProfileCard';
 
 const Dashboard = () => {
+
+  
+  
   const navigate = useNavigate(); // Get the navigate function
 
   useEffect(() => {

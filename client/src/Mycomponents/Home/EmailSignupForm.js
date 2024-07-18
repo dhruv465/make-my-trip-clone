@@ -29,7 +29,15 @@ const EmailSignupForm = ({ onClose }) => {
                 const jwtToken = data.token;
 
                 localStorage.setItem('jwtToken', jwtToken);
+
+                // Emit custom event for successful login
+                const loginEvent = new CustomEvent('loginSuccess', { detail: data.user });
+                window.dispatchEvent(loginEvent);
+
                 console.log('Token successfully sent to backend and JWT received');
+
+                // Close the login modal
+                onClose();
             } else {
                 console.error('Failed to send token to backend');
             }
@@ -67,7 +75,7 @@ const EmailSignupForm = ({ onClose }) => {
                 window.dispatchEvent(loginEvent);
 
                 console.log('Token successfully sent to backend and JWT received');
-                
+
                 // Close the login modal
                 onClose();
             } else {
@@ -81,7 +89,7 @@ const EmailSignupForm = ({ onClose }) => {
     };
 
 
-    
+
     return (
         <div className="max-w-md mx-auto mt-2">
             <h2 className="text-2xl font-bold mb-6">Log in</h2>
