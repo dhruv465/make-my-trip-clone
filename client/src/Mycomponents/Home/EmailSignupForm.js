@@ -38,6 +38,12 @@ const EmailSignupForm = ({ onClose }) => {
 
                 // Close the login modal
                 onClose();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500); // 500ms delay to allow the modal to close smoothly
+
+
             } else {
                 console.error('Failed to send token to backend');
             }
@@ -78,6 +84,11 @@ const EmailSignupForm = ({ onClose }) => {
 
                 // Close the login modal
                 onClose();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500); // 500ms delay to allow the modal to close smoothly
+
             } else {
                 const data = await response.json();
                 toast.error(data.message);
