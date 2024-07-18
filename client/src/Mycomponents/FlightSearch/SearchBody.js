@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { RxCrossCircled } from "react-icons/rx";
 import UserLogIn from '../../modals/UserLogIn';
-import BookingModal from '../../modals/BookingModal'; // Import the new BookingModal component
-import toast from 'react-hot-toast'; // Import toast
-import axios from 'axios'; // Import axios for API calls
+import BookingModal from '../../modals/BookingModal';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const SearchBody = () => {
   const [flights, setFlights] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
   const [min, setMin] = useState(0);
-  const [max, setMax] = useState(40000); // Assuming 40000 as the maximum price for example
+  const [max, setMax] = useState(40000); 
   const [value, setValue] = useState(max);
   const [isValueChanged, setIsValueChanged] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [openLogin, setOpenLogin] = useState(false); // State to control login modal visibility
-  const [openBooking, setOpenBooking] = useState(false); // State to control booking modal visibility
-  const [selectedFlight, setSelectedFlight] = useState(null); // State to hold selected flight details
-
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openBooking, setOpenBooking] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState(null);
 
   useEffect(() => {
     const fetchFlights = async () => {
@@ -38,7 +37,6 @@ const SearchBody = () => {
   }, []);
 
   useEffect(() => {
-    // Check if JWT token is present in localStorage to determine login state
     const token = localStorage.getItem('jwtToken');
     if (token) {
       setIsLoggedIn(true);
@@ -56,33 +54,31 @@ const SearchBody = () => {
   };
 
   const handleClearFilter = () => {
-    setFilteredFlights(flights); // Reset filtered flights to all flights
-    setValue(max); // Reset slider value to maximum
-    setIsValueChanged(false); // Reset value changed flag
+    setFilteredFlights(flights);
+    setValue(max);
+    setIsValueChanged(false);
   };
 
   const bookNow = (flight) => {
     if (!isLoggedIn) {
-      setOpenLogin(true); // Open the login modal if not logged in
+      setOpenLogin(true);
     } else {
-      setSelectedFlight(flight); // Set the selected flight details
-      setOpenBooking(true); // Open the booking modal
+      setSelectedFlight(flight);
+      setOpenBooking(true);
     }
   };
 
   const closeBookingModal = () => {
-    setOpenBooking(false); // Function to close the booking modal
+    setOpenBooking(false);
   };
-
 
   const handlePayNow = async () => {
     console.log('Proceeding to payment with flight:', selectedFlight);
 
-    // Simulate loading with toast notification
     const loadingId = toast.loading('Processing payment...');
 
     try {
-      const token = localStorage.getItem('jwtToken'); // Retrieve JWT token from localStorage
+      const token = localStorage.getItem('jwtToken');
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/bookings`,
         {
@@ -98,22 +94,19 @@ const SearchBody = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include JWT token in the request headers
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         }
       );
 
-      // Assuming API returns success message
       toast.success(response.data.message);
 
-      // Close booking modal after successful booking
       setOpenBooking(false);
     } catch (error) {
       console.error('Error processing payment:', error);
       toast.error('Failed to process payment');
     } finally {
-      // Remove loading toast
       toast.dismiss(loadingId);
     }
   };
@@ -221,12 +214,12 @@ const SearchBody = () => {
                       key={flight._id}
                       flight={{
                         _id: flight._id,
-                        airline: "Akasa Air", // or any logic to determine the airline
+                        airline: "Akasa Air",
                         departure: { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), city: flight.departureCity },
                         arrival: {
                           time: new Date(new Date().getTime() + Math.random() * (5 * 60 * 60 * 1000)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                           city: flight.destinationCity,
-                          nextDay: Math.random() > 0.5 // Randomly determine if the arrival is the next day
+                          nextDay: Math.random() > 0.5
                         },
                         duration: `${Math.floor(Math.random() * 5) + 1}h ${Math.floor(Math.random() * 59) + 1}m`,
                         price: flight.price.toLocaleString(),
@@ -235,10 +228,6 @@ const SearchBody = () => {
                     />
                   ))}
                 </div>
-                {/* <div className="p-4">
-                  <h2 className="text-base font-semibold mb-2 bg-white p-4 rounded-sm shadow">Mumbai → Pune Thu, 18 Jul</h2>
-                
-                </div> */}
               </div>
             </div>
           </div>
