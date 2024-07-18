@@ -60,7 +60,7 @@ const Details = () => {
         Booking history
       </h2>
       {bookings.length === 0 ? (
-        <p>Login to see recent books</p>
+        <p>No recent flights.</p>
       ) : (
         bookings.map((booking) => (
           <div key={booking._id} className="bg-gray-100 p-4 rounded-md mb-6">

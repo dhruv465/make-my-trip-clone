@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
 
-const EmailSignupForm = ({ onSwitchToMobile }) => {
+const EmailSignupForm = ({ onClose }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -42,12 +42,12 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
         console.error('Google Login Failed:', error);
     };
 
-    const handleEmailSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
+        // Proceed with your API call to login the user
         try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
-            const signupResponse = await fetch(`${backendUrl}/api/signup/email`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,51 +55,38 @@ const EmailSignupForm = ({ onSwitchToMobile }) => {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (signupResponse.ok) {
-                toast.success('User successfully registered!');
-                await handleLogin();
-            } else {
-                const errorData = await signupResponse.json();
-                toast.error(errorData.message || 'Failed to register user.');
-            }
-        } catch (error) {
-            console.error('Error signing up with email:', error);
-            toast.error('Failed to sign up with email.');
-        }
-    };
-
-    const handleLogin = async () => {
-        try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
-            const loginResponse = await fetch(`${backendUrl}/api/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (loginResponse.ok) {
-                const data = await loginResponse.json();
+            if (response.ok) {
+                const data = await response.json();
                 const jwtToken = data.token;
 
                 localStorage.setItem('jwtToken', jwtToken);
-                console.log('Logged in successfully and JWT token stored:', jwtToken);
+                toast.success('User successfully logged in!');
+
+                // Emit custom event for successful login
+                const loginEvent = new CustomEvent('loginSuccess', { detail: data.user });
+                window.dispatchEvent(loginEvent);
+
+                console.log('Token successfully sent to backend and JWT received');
+                
+                // Close the login modal
+                onClose();
             } else {
-                const errorData = await loginResponse.json();
-                toast.error(errorData.message || 'Failed to login.');
+                const data = await response.json();
+                toast.error(data.message);
             }
         } catch (error) {
             console.error('Error logging in:', error);
-            toast.error('Failed to login.');
+            toast.error('Failed to log in. Please try again.');
         }
     };
 
+
+    
     return (
         <div className="max-w-md mx-auto mt-2">
             <h2 className="text-2xl font-bold mb-6">Log in</h2>
 
-            <form onSubmit={handleEmailSubmit}>
+            <form onSubmit={handleSubmit}>
                 <div className="mb-2">
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                         Email

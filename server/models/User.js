@@ -5,7 +5,7 @@ const userSchema = new Schema({
     googleId: {
         type: String,
         unique: true,
-        sparse: true,
+        sparse: true,  // This ensures MongoDB ignores `null` values for uniqueness
     },
     email: {
         type: String,
@@ -26,7 +26,6 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
-    
 });
 
 const User = mongoose.model('User', userSchema);

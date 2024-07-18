@@ -6,6 +6,12 @@ const UserProfileCard = () => {
     const [userPicture, setUserPicture] = useState('');
     const [user, setUser] = useState(null);
 
+    const getTwoLetterName = (name) => {
+        if (!name) return '';
+        const [firstName, lastName] = name.split(' ');
+        return `${firstName.charAt(0)}${lastName ? lastName.charAt(0) : ''}`;
+    };
+
     useEffect(() => {
         fetchUserData();
     }, []);
@@ -40,9 +46,17 @@ const UserProfileCard = () => {
             {user ? (
                 <div className="bg-gradient-to-r from-green-400 to-teal-500 p-4 flex justify-between items-center">
                     <h2 className="text-white font-bold text-lg">{user.name}</h2>
-                    <div className="bg-white rounded-full">
-                        <img className="w-12 h-12 rounded-full object-cover" src={user.picture} alt="User Profile" />
-                    </div>
+                    {user.picture ? (
+                        <img
+                            src={user.picture}
+                            alt={user.name}
+                            className="h-8 w-8 rounded-full object-cover"
+                        />
+                    ) : (
+                        <div className="h-8 w-8 flex items-center justify-center bg-green-300 rounded-full text-white">
+                            {getTwoLetterName(user.name)}
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="bg-gradient-to-r from-green-400 to-teal-500 p-4 flex justify-between items-center">

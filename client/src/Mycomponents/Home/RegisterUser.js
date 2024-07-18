@@ -41,13 +41,14 @@ const RegisterUser = () => {
                 // Optionally redirect or handle success
             } else {
                 const data = await response.json();
-                alert(data.message);
+                toast.error(data.message);
             }
         } catch (error) {
             console.error('Error registering:', error);
             toast.error('Failed to register. Please try again.');
         }
     };
+
 
 
     const handleGoogleLoginSuccess = async (response) => {

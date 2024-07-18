@@ -14,7 +14,9 @@ import RegisterUser from '../Mycomponents/Home/RegisterUser';
 export default function UserLogIn({ open, setOpen }) {
   const [isEmailSignup, setIsEmailSignup] = useState(true);
   const toggleSignupMethod = () => { setIsEmailSignup(!isEmailSignup); };
-
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
     <Modal
       aria-labelledby="modal-title"
@@ -65,7 +67,7 @@ export default function UserLogIn({ open, setOpen }) {
 
           </TabList>
           <TabPanel value={0}>
-              <EmailSignupForm onSwitchToMobile={toggleSignupMethod} />
+            <EmailSignupForm onSwitchToMobile={toggleSignupMethod} onClose={handleClose} />
           </TabPanel>
           <TabPanel value={1}>
             <RegisterUser onSwitchToEmail={toggleSignupMethod} />

@@ -6,11 +6,9 @@ import { FaUser } from 'react-icons/fa';
 import UserLogIn from '../../modals/UserLogIn';
 import LogoutModal from '../../modals/LogoutModal';
 import { FaAngleDown } from "react-icons/fa";
-import { MdFlightTakeoff } from 'react-icons/md';
+import { MdFlightTakeoff, MdSpaceDashboard } from 'react-icons/md';
 import { LiaHotelSolid } from 'react-icons/lia';
-import { useLocation, navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { MdSpaceDashboard } from "react-icons/md";
+import { useLocation, useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Header = () => {
     const [open, setOpen] = useState(false);
@@ -19,7 +17,6 @@ const Header = () => {
     const [showIcons, setShowIcons] = useState(false);
     const location = useLocation();
     const navigate = useNavigate(); // Use useNavigate hook
-
 
     useEffect(() => {
         fetchUserData();
@@ -52,8 +49,9 @@ const Header = () => {
     };
 
     useEffect(() => {
-        const handleLoginSuccess = () => {
-            fetchUserData();
+        const handleLoginSuccess = (event) => {
+            setUser(event.detail);
+            setOpen(false); // Close the modal on login success
         };
 
         window.addEventListener('loginSuccess', handleLoginSuccess);
@@ -84,7 +82,6 @@ const Header = () => {
         };
     }, [location.pathname]); // Update effect when location.pathname changes
 
-
     const handleLogout = () => {
         localStorage.removeItem('jwtToken');
         setUser(null);
@@ -99,7 +96,6 @@ const Header = () => {
 
     const handleScroll = () => {
         const scrollPosition = window.scrollY;
-
         const scrollThreshold = 100;
 
         if (scrollPosition > scrollThreshold) {
@@ -123,7 +119,7 @@ const Header = () => {
 
     const handleDashboardClick = () => {
         navigate('/dashboard');
-    }
+    };
 
     return (
         <div className="sticky top-0 z-50 bg-white shadow-lg">
@@ -160,18 +156,14 @@ const Header = () => {
                                                     </div>
                                                 </div>
                                             )}
-
                                         </div>
                                     </div>
                                     <div className="hidden sm:ml-6 sm:block">
-
                                         <div className="flex space-x-4">
-
                                             {user ? (
                                                 <div className="flex justify-between items-center space-x-4">
                                                     <div className="flex items-center space-x-2 cursor-pointer bg-blue-50 rounded-full py-2 px-4 shadow-md text-blue-500" onClick={handleDashboardClick}>
-                                                        <MdSpaceDashboard
-                                                            size={25} />
+                                                        <MdSpaceDashboard size={25} />
                                                         <span className="text-black text-xs leading-tight">Dashboard</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setLogoutOpen(true)}>
@@ -232,10 +224,8 @@ const Header = () => {
                                     <span className="mt-1 text-sm">Hotels</span>
                                 </div>
                                 <div className="bg-blue-50 p-3 rounded-md m-2 flex items-center space-x-2 cursor-pointer">
-
                                     {user ? (
                                         <div className="sm:block justify-between items-center space-y-4">
-
                                             <div className="flex items-center space-x-2" onClick={() => setLogoutOpen(true)}>
                                                 <div className="h-8 w-8 mr-2 rounded-full bg-green-300 flex justify-center items-center">
                                                     {user.picture ? (
@@ -268,7 +258,6 @@ const Header = () => {
                                         </div>
                                     ) : (
                                         <div className="flex items-center space-x-2">
-
                                             <div className="h-8 w-8 mr-2 rounded-full bg-green-300 flex justify-center items-center">
                                                 <FaUser size={20} />
                                             </div>
@@ -287,7 +276,7 @@ const Header = () => {
                                 </div>
                             </div>
                         </DisclosurePanel>
-                        <UserLogIn open={open} setOpen={setOpen} />
+                        <UserLogIn open={open} setOpen={setOpen} onClose={() => setOpen(false)} />
                         <LogoutModal open={logoutOpen} setOpen={setLogoutOpen} handleLogout={handleLogout} />
                     </>
                 )}
