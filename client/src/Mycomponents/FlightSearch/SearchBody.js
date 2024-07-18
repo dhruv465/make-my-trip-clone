@@ -4,18 +4,25 @@ import UserLogIn from '../../modals/UserLogIn';
 import BookingModal from '../../modals/BookingModal';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 const SearchBody = () => {
   const [flights, setFlights] = useState([]);
   const [filteredFlights, setFilteredFlights] = useState([]);
   const [min, setMin] = useState(0);
-  const [max, setMax] = useState(40000); 
+  const [max, setMax] = useState(40000);
   const [value, setValue] = useState(max);
   const [isValueChanged, setIsValueChanged] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
   const [openBooking, setOpenBooking] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null);
+  const location = useLocation();
+  // Extract cities from search params
+  const params = new URLSearchParams(location.search);
+  const departureCity = params.get('departureCity');
+  const destinationCity = params.get('destinationCity');
+
 
   useEffect(() => {
     const fetchFlights = async () => {
@@ -24,7 +31,7 @@ const SearchBody = () => {
         const data = await response.json();
         if (Array.isArray(data)) {
           setFlights(data);
-          setFilteredFlights(data);
+          filterFlights(data);
         } else {
           console.error('Expected an array but got:', data);
         }
@@ -34,7 +41,20 @@ const SearchBody = () => {
     };
 
     fetchFlights();
-  }, []);
+  }, [location.search]);
+
+  const filterFlights = (flights) => {
+    const params = new URLSearchParams(location.search);
+    const departureCity = params.get('departureCity');
+    const destinationCity = params.get('destinationCity');
+
+    const filtered = flights.filter(flight =>
+      (!departureCity || flight.departureCity === departureCity) &&
+      (!destinationCity || flight.destinationCity === destinationCity)
+    );
+
+    setFilteredFlights(filtered);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('jwtToken');
@@ -110,6 +130,7 @@ const SearchBody = () => {
       toast.dismiss(loadingId);
     }
   };
+
   const FlightCard = ({ flight }) => (
     <div className="bg-white p-4 rounded-sm shadow-md mb-4 text-sm">
       <div className="flex justify-between items-center mb-2">
@@ -138,7 +159,7 @@ const SearchBody = () => {
 
       <div className="flex justify-end items-center">
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-xs"
           onClick={() => bookNow(flight)}
         >
           Book Now
@@ -151,12 +172,17 @@ const SearchBody = () => {
     </div>
   );
 
+  const headingText = departureCity && destinationCity
+    ? `Flights from ${departureCity} to ${destinationCity}`
+    : 'Flight Details';
+
   return (
     <div className="min-h-screen lg:-mt-24">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-2xl lg:text-white font-bold mb-6">
-            Flights from Pune to Mumbai, and back
+            {headingText}
+
             {isValueChanged && ` within ₹${value}`}
           </h1>
           <div className="flex flex-col lg:flex-row gap-6">
@@ -207,7 +233,7 @@ const SearchBody = () => {
             </div>
 
             <div className="lg:w-4/5">
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-1 gap-4">
                 <div>
                   {filteredFlights.map(flight => (
                     <FlightCard

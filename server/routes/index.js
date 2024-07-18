@@ -236,6 +236,39 @@ router.get('/flights', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+// Search flights endpoint
+router.get('/searchFlights', async (req, res) => {
+    try {
+        const { departureCity, destinationCity, departureDate, returnDate, selectedFare } = req.query;
+
+        // Construct the query object based on the parameters
+        let query = {
+            departureCity: departureCity ? new RegExp(departureCity, 'i') : undefined,
+            destinationCity: destinationCity ? new RegExp(destinationCity, 'i') : undefined,
+        };
+
+        if (departureDate) {
+            query.departureDate = { $gte: new Date(departureDate) };
+        }
+
+        if (returnDate) {
+            query.returnDate = { $gte: new Date(returnDate) };
+        }
+
+        if (selectedFare) {
+            query.classSelection = { $regex: new RegExp(selectedFare, 'i') };
+        }
+
+        // Remove undefined fields from the query
+        Object.keys(query).forEach(key => query[key] === undefined && delete query[key]);
+
+        const flights = await Flight.find(query);
+        res.json(flights);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching flights', error });
+    }
+});
+
 
 
 // POST /api/bookings 

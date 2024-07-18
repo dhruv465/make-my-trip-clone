@@ -11,7 +11,7 @@ import AppDownloadWrapper from '../Mycomponents/Home/AppDownloadWrapper';
 
 
 const Home = () => {
-
+  const [filteredFlights, setFilteredFlights] = useState([]);
   // State to manage whether the header should be sticky
   const [isSticky, setIsSticky] = useState(false);
 
@@ -39,7 +39,7 @@ const Home = () => {
       <div className="relative lg:flex lg:justify-center">
         <img src={bgImg} className="w-100" alt="Background" />
         <div className="lg:absolute -top-16 sm:start-auto  w-75 ">
-          <SearchForm />
+          <SearchForm setFilteredFlights={setFilteredFlights}/>
         </div>
       </div>
       <div>

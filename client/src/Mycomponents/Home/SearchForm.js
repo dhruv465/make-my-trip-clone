@@ -11,7 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export default function SearchForm() {
+const SearchForm = () => {
   const [selectedFare, setSelectedFare] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [adults, setAdults] = useState(1);
@@ -26,7 +26,7 @@ export default function SearchForm() {
   const [flights, setFlights] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Initialize navigate
-
+  // const [tripType, setTripType] = useState('');
 
   const handleFareSelection = (index) => {
     setSelectedFare(index);
@@ -64,62 +64,21 @@ export default function SearchForm() {
   };
 
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
+    const params = new URLSearchParams({
+      departureCity,
+      destinationCity,
+      departureDate: departureDate.toISOString(),
+      returnDate: returnDate ? returnDate.toISOString() : '',
+      selectedFare,
+    }).toString();
 
-  const searchFlights = async (departureCity, destinationCity, departureDate, returnDate) => {
-    try {
-      // Format dates to ISO strings ensuring they represent local time correctly
-      const formattedDepartureDate = departureDate.toISOString().split('T')[0];
-      const formattedReturnDate = returnDate ? returnDate.toISOString().split('T')[0] : null;
-
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/flights`, {
-        params: {
-          departureCity,
-          destinationCity,
-          departureDate: formattedDepartureDate,
-          returnDate: formattedReturnDate,
-        },
-        withCredentials: true, // Ensure credentials are sent with the request if needed
-      });
-
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching flights:', error);
-      return []; // or return null; depending on your needs
-    }
+    navigate(`/search-results?${params}`);
   };
 
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      const flightsData = await searchFlights(departureCity, destinationCity, departureDate, returnDate);
-      setFlights(flightsData); // Update flights state with fetched data
-      setError(''); // Clear any previous error
-
-      // Navigate to another page with the data (example: '/search-results')
-      navigate('/search-results', {
-        state: {
-          flights: flightsData,
-          searchParams: {
-            departureCity,
-            destinationCity,
-            departureDate,
-            returnDate,
-            adults,
-            children,
-            infants,
-            travelClass,
-          },
-        },
-      });
-      setError('');
-    } catch (error) {
-      console.error('Error fetching flights:', error);
-      setError('Failed to fetch flights. Please try again.'); // Handle error state
-    }
-  };
 
   return (
 
@@ -279,7 +238,7 @@ export default function SearchForm() {
               </button>
             </div>
           </form>
-          {/* Display flight details */}
+          {/* Display flight details
           {flights.length > 0 && (
             <div className="mt-6">
               <h2 className="text-xl font-semibold mb-4">Flight Details</h2>
@@ -291,13 +250,13 @@ export default function SearchForm() {
                   <p>Departure Date: {new Date(flight.departureDate).toLocaleDateString()}</p>
                   <p>Return Date: {flight.returnDate ? new Date(flight.returnDate).toLocaleDateString() : 'N/A'}</p>
                   {/* Add more flight details as needed */}
-                </div>
+          {/* </div>
               ))}
             </div>
-          )}
+          )} */}
 
           {/* Error message */}
-          {error && <p className="text-red-500 mt-4">{error}</p>}
+          {/* {error && <p className="text-red-500 mt-4">{error}</p>} */}
         </div>
       </div>
 
@@ -377,3 +336,5 @@ export default function SearchForm() {
     </div>
   );
 }
+
+export default SearchForm;

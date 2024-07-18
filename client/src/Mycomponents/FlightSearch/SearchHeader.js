@@ -4,19 +4,23 @@ import { useLocation } from 'react-router-dom';
 
 const SearchResults = () => {
   const location = useLocation();
-  const { flights, error, searchParams } = location.state || {};
+  const params = new URLSearchParams(location.search);
 
-  const {
+  // Extract parameters from URL
+  const departureCity = params.get('departureCity') || '';
+  const destinationCity = params.get('destinationCity') || '';
+  const departureDate = params.get('departureDate') ? new Date(params.get('departureDate')) : null;
+  const returnDate = params.get('returnDate') ? new Date(params.get('returnDate')) : null;
+  const selectedFare = params.get('selectedFare') || '';
+
+  // For demonstration purposes
+  console.log('Parameters:', {
     departureCity,
     destinationCity,
     departureDate,
     returnDate,
-    adults,
-    children,
-    infants,
-    travelClass,
     selectedFare,
-  } = searchParams || {};
+  });
 
   return (
     <>
@@ -26,18 +30,17 @@ const SearchResults = () => {
           <div className="p-4 rounded-lg shadow-lg">
             {/* Trip Details Section */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between lg:space-x-4 space-y-4 lg:space-y-0">
-             
               <div className="w-full lg:w-auto">
                 <label htmlFor="fromCity" className="block text-blue-400 text-xs font-bold mb-1">
                   FROM
                 </label>
-                <input id="fromCity" className="bg-gray-700 text-white px-4 py-2 rounded-md w-full" type="text" value={departureCity || ''} readOnly />
+                <input id="fromCity" className="bg-gray-700 text-white px-4 py-2 rounded-md w-full" type="text" value={departureCity} readOnly />
               </div>
               <div className="w-full lg:w-auto">
                 <label htmlFor="toCity" className="block text-blue-400 text-xs font-bold mb-1">
                   TO
                 </label>
-                <input id="toCity" className="bg-gray-700 text-white px-4 py-2 rounded-md w-full" type="text" value={destinationCity || ''} readOnly />
+                <input id="toCity" className="bg-gray-700 text-white px-4 py-2 rounded-md w-full" type="text" value={destinationCity} readOnly />
               </div>
               <div className="w-full lg:w-auto">
                 <label htmlFor="departure" className="block text-blue-400 text-xs font-bold mb-1">
@@ -55,7 +58,7 @@ const SearchResults = () => {
                 <label htmlFor="travellerAndClass" className="block text-blue-400 text-xs font-bold mb-1">
                   PASSENGERS & CLASS
                 </label>
-                <input id="travellerAndClass" className="bg-gray-700 text-white px-4 py-2 rounded-md w-full" type="text" value={`${adults + children + infants} Travelers, ${travelClass}`} readOnly />
+                <input id="travellerAndClass" className="bg-gray-700 text-white px-4 py-2 rounded-md w-full" type="text" value={`Total Travelers, ${selectedFare}`} readOnly />
               </div>
               <button className="bg-blue-500 text-white px-8 py-2 rounded-md hover:bg-blue-600 transition duration-300 w-full lg:w-auto lg:mt-6" disabled>
                 SEARCH
