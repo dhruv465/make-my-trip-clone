@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { MdFlightTakeoff } from 'react-icons/md';
 import { LiaHotelSolid, LiaTrainSolid, LiaBusSolid, LiaCarSolid } from 'react-icons/lia';
 import { MdMapsHomeWork } from 'react-icons/md';
@@ -6,9 +10,6 @@ import { TbBeach } from 'react-icons/tb';
 import { CiMedicalClipboard } from 'react-icons/ci';
 import { RiCurrencyLine } from 'react-icons/ri';
 import { IoIosArrowDown } from 'react-icons/io';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useNavigate } from 'react-router-dom';
 
 const SearchForm = () => {
   const [selectedFare, setSelectedFare] = useState(null);
@@ -22,10 +23,24 @@ const SearchForm = () => {
   const [returnDate, setReturnDate] = useState(null);
   const [departureCity, setDepartureCity] = useState('');
   const [destinationCity, setDestinationCity] = useState('');
-  const [flights, setFlights] = useState([]);
-  const [error, setError] = useState('');
+  const [departureCities, setDepartureCities] = useState([]);
+  const [destinationCities, setDestinationCities] = useState([]);
+
   const navigate = useNavigate();
-  // const [tripType, setTripType] = useState('');
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/flights/cities`);
+        setDepartureCities(response.data.departureCities);
+        setDestinationCities(response.data.destinationCities);
+      } catch (error) {
+        console.error('Error fetching cities', error);
+      }
+    };
+
+    fetchCities();
+  }, []);
 
   const handleFareSelection = (index) => {
     setSelectedFare(index);
@@ -54,14 +69,12 @@ const SearchForm = () => {
 
   const handleDepartureDateChange = (date) => {
     setDepartureDate(date);
-
     setReturnDate(null);
   };
 
   const handleReturnDateChange = (date) => {
     setReturnDate(date);
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -77,57 +90,42 @@ const SearchForm = () => {
     navigate(`/search-results?${params}`);
   };
 
-
-
   return (
-
     <div className="mx-auto py-8 sm:py-12 lg:py-32">
       <div className="p-4 sm:px-6 lg:p-6">
         <div className="container mx-auto bg-white rounded-md shadow-lg max-w-7xl">
-
-          <div className="text-center bg-white shadow-lg -mt-8 p-3 rounded-md overflow-x-auto">
-            <div className="flex space-x-4 sm:space-x-8 lg:space-x-16 items-center">
-              <a href="#flights" title="Flights" className="flex flex-col items-center text-blue-500 pr-3">
-                <MdFlightTakeoff size={25} />
-                <span className="mt-1 text-sm">Flights</span>
-              </a>
-              <a href="#hotels" title="Hotels" className="flex flex-col items-center pr-3">
-                <LiaHotelSolid size={25} />
-                <span className="mt-1 text-sm">Hotels</span>
-              </a>
-              <a href="#homestays" title="Homestays & Villas" className="flex flex-col items-center pr-3">
-                <MdMapsHomeWork size={25} />
-                <span className="mt-1 text-sm">Homestays & Villas</span>
-              </a>
-              <a href="#holiday-packages" title="Holiday Packages" className="flex flex-col items-center pr-3">
-                <TbBeach size={25} />
-                <span className="mt-1 text-sm">Holiday Packages</span>
-              </a>
-              <a href="#trains" title="Trains" className="flex flex-col items-center pr-3">
-                <LiaTrainSolid size={25} />
-                <span className="mt-1 text-sm">Trains</span>
-              </a>
-              <a href="#buses" title="Buses" className="flex flex-col items-center pr-3">
-                <LiaBusSolid size={25} />
-                <span className="mt-1 text-sm">Buses</span>
-              </a>
-              <a href="#cabs" title="Cabs" className="flex flex-col items-center pr-3">
-                <LiaCarSolid size={25} />
-                <span className="mt-1 text-sm">Cabs</span>
-              </a>
-              <a href="#forex" title="Forex Card & Currency" className="flex flex-col items-center">
-                <RiCurrencyLine size={25} />
-                <span className="mt-1 text-sm">Forex Card & Currency</span>
-              </a>
-              <a href="#travel-insurance" title="Travel Insurance" className="flex flex-col items-center pr-20">
-                <CiMedicalClipboard size={25} />
-                <span className="mt-1 text-sm">Travel Insurance</span>
-              </a>
+          <div className="text-center bg-white shadow-lg -mt-8 rounded-md overflow-x-auto">
+            <div className="relative flex justify-between items-center space-x-4 md:space-x-6 lg:space-x-8 xl:space-x-12 p-3 border-b-2 border-gray-200">
+              {[
+                { href: "#flights", title: "Flights", icon: <MdFlightTakeoff size={25} />, selected: true },
+                { href: "#hotels", title: "Hotels", icon: <LiaHotelSolid size={25} /> },
+                { href: "#homestays", title: "Homestays & Villas", icon: <MdMapsHomeWork size={25} /> },
+                { href: "#holiday-packages", title: "Holiday Packages", icon: <TbBeach size={25} /> },
+                { href: "#trains", title: "Trains", icon: <LiaTrainSolid size={25} /> },
+                { href: "#buses", title: "Buses", icon: <LiaBusSolid size={25} /> },
+                { href: "#cabs", title: "Cabs", icon: <LiaCarSolid size={25} /> },
+                { href: "#forex", title: "Forex Card & Currency", icon: <RiCurrencyLine size={25} /> },
+                { href: "#travel-insurance", title: "Travel Insurance", icon: <CiMedicalClipboard size={25} /> },
+              ].map((item, index) => (
+                <a
+                  key={index}
+                  href={item.href}
+                  title={item.title}
+                  className={`flex flex-col items-center min-w-[60px] p-2 rounded-md transition-colors duration-300 relative
+          ${item.selected ? 'text-blue-500' : 'text-gray-600 hover:bg-blue-50'}`}
+                >
+                  {item.icon}
+                  <span className="mt-1 text-xs sm:text-sm">{item.title}</span>
+                  {item.selected && (
+                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500" style={{ bottom: '-11px' }}></div>
+                  )}
+                </a>
+              ))}
             </div>
           </div>
           <form onSubmit={handleSubmit} className="p-4 sm:p-6 lg:p-8">
             <div className="mb-4 flex flex-wrap gap-4">
-              <label className="inline-flex items-center cursor-pointer ">
+              <label className="inline-flex items-center cursor-pointer">
                 <input type="radio" className="form-radio peer" name="tripType" value="oneWay" />
                 <span className="ml-2 peer-checked:bg-blue-50 peer-checked:font-bold peer-checked:text-black px-2 py-1 text-xs rounded-full">One Way</span>
               </label>
@@ -143,36 +141,44 @@ const SearchForm = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 border rounded-md p-2">
               {/* From Section */}
-              <div className="flex flex-col items-start lg:border-r">
+              <div className="flex flex-col items-start lg:border-r pr-4">
                 <div className="text-gray-500">From</div>
-                <div className="text-xl font-bold w-full">
-                  <input
-                    type="text"
-                    placeholder="Enter City or Airport"
-                    className="border-none focus:outline-none w-full"
+                <div className="text-lg font-bold relative w-full">
+                  <select
                     value={departureCity}
                     onChange={(e) => setDepartureCity(e.target.value)}
-                  />
+                    className="w-full text-gray-700 bg-white rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-none focus:border-transparent cursor-pointer"
+                  >
+                    <option value="" disabled>Select City or Airport</option>
+                    {departureCities.map((city, index) => (
+                      <option key={index} value={city}>{city}</option>
+                    ))}
+                  </select>
+
                 </div>
               </div>
 
               {/* To Section */}
-              <div className="flex flex-col items-start lg:border-r">
+              <div className="flex flex-col items-start lg:border-r pr-4">
                 <div className="text-gray-500">To</div>
-                <div className="text-xl font-bold w-full">
-                  <input
-                    type="text"
-                    placeholder="Enter City or Airport"
-                    className="border-none focus:outline-none w-full"
+                <div className="text-lg font-bold relative w-full">
+                  <select
                     value={destinationCity}
                     onChange={(e) => setDestinationCity(e.target.value)}
-                  />
+                    className="w-full text-gray-700 bg-white rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-none focus:border-transparent cursor-pointer"
+                  >
+                    <option value="" className="rounded-md" disabled>Select City or Airport</option>
+                    {destinationCities.map((city, index) => (
+                      <option key={index} value={city}>{city}</option>
+                    ))}
+                  </select>
+
                 </div>
               </div>
 
               {/* Departure Section */}
               <div className="flex flex-col items-start lg:border-r">
-                <div className="text-gray-500">Departure <IoIosArrowDown className="inline text-blue-500" /></div>
+                <div className="text-gray-500">Departure</div>
                 <DatePicker
                   selected={departureDate}
                   onChange={handleDepartureDateChange}
@@ -183,7 +189,7 @@ const SearchForm = () => {
 
               {/* Return Section */}
               <div className="flex flex-col items-start lg:border-r">
-                <div className="text-gray-500">Return <IoIosArrowDown className="inline text-blue-500" /></div>
+                <div className="text-gray-500">Return</div>
                 <DatePicker
                   selected={returnDate}
                   onChange={handleReturnDateChange}
@@ -195,7 +201,7 @@ const SearchForm = () => {
 
               {/* Travelers & Class Section */}
               <div className="flex flex-col items-start" onClick={toggleModal}>
-                <div className="text-gray-500">Travelers & Class <IoIosArrowDown className="inline text-blue-500" /></div>
+                <div className="text-gray-500">Travelers & Class</div>
                 <div className="text-xl font-bold">{adults + children + infants} Travelers</div>
                 <div className="text-sm text-gray-500">{travelClass}</div>
               </div>

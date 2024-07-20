@@ -13,7 +13,7 @@ const Flight = require('../models/Flight');
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 const Booking = require('../models/Booking'); // Import Booking model
-
+const flightController = require('../controllers/flightController');
 const clientId = 'WKAMP1ibp0JPOF4CPoKygURpDanG3ouT';
 const clientSecret = 'GwnqvBtGmDwUSSCn';
 let accessToken = null;
@@ -202,18 +202,18 @@ router.get('/flights', async (req, res) => {
             destinationCity: { $regex: new RegExp(destinationCity, 'i') }
         };
 
-        
+
         const parsedDepartureDate = departureDate ? new Date(departureDate) : null;
         const parsedReturnDate = returnDate ? new Date(returnDate) : null;
 
         if (parsedDepartureDate) {
-          
+
             parsedDepartureDate.setUTCHours(0, 0, 0, 0);
             query.departureDate = { $gte: parsedDepartureDate };
         }
 
         if (parsedReturnDate) {
-          
+
             parsedReturnDate.setUTCHours(23, 59, 59, 999);
             query.returnDate = { $lte: parsedReturnDate };
         }
@@ -236,12 +236,14 @@ router.get('/flights', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+
+
 // Search flights endpoint
 router.get('/searchFlights', async (req, res) => {
     try {
         const { departureCity, destinationCity, departureDate, returnDate, selectedFare } = req.query;
 
-     
+
         let query = {
             departureCity: departureCity ? new RegExp(departureCity, 'i') : undefined,
             destinationCity: destinationCity ? new RegExp(destinationCity, 'i') : undefined,
@@ -259,7 +261,7 @@ router.get('/searchFlights', async (req, res) => {
             query.classSelection = { $regex: new RegExp(selectedFare, 'i') };
         }
 
-       
+
         Object.keys(query).forEach(key => query[key] === undefined && delete query[key]);
 
         const flights = await Flight.find(query);
@@ -305,5 +307,15 @@ router.get('/bookings', authenticateJWT, async (req, res) => {
 });
 
 
+// Route to get unique cities
+router.get('/flights/cities', async (req, res) => {
+    try {
+        const departureCities = await Flight.distinct('departureCity');
+        const destinationCities = await Flight.distinct('destinationCity');
+        res.json({ departureCities, destinationCities });
+    } catch (error) {
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
 
 module.exports = router;

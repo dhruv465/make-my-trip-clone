@@ -132,7 +132,10 @@ const SearchBody = () => {
   };
 
   const FlightCard = ({ flight }) => (
-    <div className="bg-white p-4 rounded-sm shadow-md mb-4 text-sm">
+    <div className="bg-white p-4 rounded-sm shadow-md mb-4 text-sm relative">
+      <div className="absolute top-2 right-2 bg-blue-100 text-blue-800 p-1.5 text-xs rounded">
+        {new Date(flight.departureDate).toLocaleDateString()}
+      </div>
       <div className="flex justify-between items-center mb-2">
         <span className="font-semibold">{flight.airline}</span>
         <span className="text-xs text-gray-500">{flight.duration}</span>
@@ -171,6 +174,7 @@ const SearchBody = () => {
       </div>
     </div>
   );
+
 
   const headingText = departureCity && destinationCity
     ? `Flights from ${departureCity} to ${destinationCity}`
@@ -248,8 +252,9 @@ const SearchBody = () => {
                           nextDay: Math.random() > 0.5
                         },
                         duration: `${Math.floor(Math.random() * 5) + 1}h ${Math.floor(Math.random() * 59) + 1}m`,
-                        price: flight.price.toLocaleString(),
-                        stops: "1 stop via Ahme..."
+                        price: flight.price,
+                        stops: "1 stop via Ahme...",
+                        departureDate: flight.departureDate // Add this line
                       }}
                     />
                   ))}

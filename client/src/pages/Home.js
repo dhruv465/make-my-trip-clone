@@ -36,16 +36,16 @@ const Home = () => {
       <div className={`sticky top-0 z-50 ${isSticky ? 'bg-white shadow-md' : ''}`}>
         <Header />
       </div>
-      <div className="relative lg:flex lg:justify-center">
-        <img src={bgImg} className="w-100" alt="Background" />
-        <div className="lg:absolute -top-16 sm:start-auto  w-75 ">
-          <SearchForm setFilteredFlights={setFilteredFlights}/>
+
+      <div className="relative lg:flex lg:justify-center lg:mb-24">
+        <img src={bgImg} className="w-full" alt="Background" />
+        <div className="lg:absolute lg:-top-16 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-full  px-4">
+          <SearchForm setFilteredFlights={setFilteredFlights} />
         </div>
       </div>
-      <div>
-        <Explore />
-      </div>
-      <div>
+
+
+      <div className="mt-8 lg:mt-0">
         <Offers />
       </div>
       <div>
