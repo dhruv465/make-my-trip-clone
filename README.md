@@ -46,10 +46,6 @@
    MONGO_URI=Your_MongoDB_URI
    REACT_APP_GOOGLE_CLIENT_ID=Your_Google_Client_ID
    JWT_SECRET=Your_JWT_Secret_Key
-   EMAIL_USERNAME=Your_Email_ID
-   EMAIL_PASSWORD=Your_Email_Password
-   TWILIO_ACCOUNT_SID=Your_Twilio_Account_SID
-   TWILIO_AUTH_TOKEN=Your_Twilio_Auth_Token
    ```
 
 ### Running the Project
