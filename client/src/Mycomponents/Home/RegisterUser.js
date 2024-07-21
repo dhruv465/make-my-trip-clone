@@ -127,7 +127,7 @@ const RegisterUser = () => {
                         <input
                             type="password"
                             id="confirmPassword"
-                            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none ${showPasswordMatchMessage ? 'border-red-500' : 'border-green-500'
+                            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none ${showPasswordMatchMessage ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             value={confirmPassword}
                             onChange={handleConfirmPasswordChange}
