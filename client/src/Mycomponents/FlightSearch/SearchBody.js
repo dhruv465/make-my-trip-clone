@@ -126,7 +126,7 @@ const SearchBody = () => {
       setOpenBooking(false);
     } catch (error) {
       console.error('Error processing payment:', error);
-      toast.error('Failed to process payment');
+      toast.error('Failed to process payment, Please Check if your login or not');
     } finally {
       toast.dismiss(loadingId);
     }
