@@ -256,7 +256,7 @@ router.post('/bookings', authenticateJWT, async (req, res) => {
         res.status(201).json({ message: 'Your flight booked successfully' });
     } catch (error) {
         console.error('Error creating booking:', error);
-        res.status(500).json({ message: 'Failed to create booking, Please Check if your login or not' });
+        res.status(500).json({ message: 'Failed to create booking' });
     }
 });
 
