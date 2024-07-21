@@ -2,7 +2,7 @@ import React from 'react';
 
 const AppDownloadWrapper = () => {
   return (
-    <div className="bg-white h-48 p-8 rounded-lg drop-shadow-xl max-w-6xl mx-auto pt-10 ">
+    <div className="bg-white h-48 p-8 rounded-lg drop-shadow-2xl max-w-6xl mx-auto pt-10 ">
       <div className="flex items-center justify-between">
         <div className="flex-grow mr-4">
           <div className="flex items-center space-x-2 mb-1">
@@ -27,7 +27,7 @@ const AppDownloadWrapper = () => {
             </button>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 ">
           <div className="flex flex-col space-y-2">
             <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Google Play" className="h-12" />
             <img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="App Store" className="h-9" />

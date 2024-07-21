@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
-import Header from '../Mycomponents/Home/Header';
-import SearchForm from '../Mycomponents/Home/SearchForm';
+import { useEffect, useState } from 'react';
 import bgImg from '.././assets/bg.jpg';
-import Explore from '../Mycomponents/Home/Explore';
-import Promotions from '../Mycomponents/Home/Promotions';
-import Offers from '../Mycomponents/Home/Offers';
-import Footer from '../Mycomponents/Home/Footer';
-import FAQSection from '../Mycomponents/Home/FAQSection';
 import AppDownloadWrapper from '../Mycomponents/Home/AppDownloadWrapper';
+import FAQSection from '../Mycomponents/Home/FAQSection';
+import Footer from '../Mycomponents/Home/Footer';
+import Header from '../Mycomponents/Home/Header';
+import Offers from '../Mycomponents/Home/Offers';
+import Promotions from '../Mycomponents/Home/Promotions';
+import SearchForm from '../Mycomponents/Home/SearchForm';
 import TripIdeaSlider from '../Mycomponents/Home/TripIdeaSlider';
 
 
@@ -44,12 +43,7 @@ const Home = () => {
           <SearchForm setFilteredFlights={setFilteredFlights} />
         </div>
       </div>
-      {/* <div>
-        <div className="px-2 z-50">
-          <Explore />
-        </div>
-      </div> */}
-
+    
       <div className="mt-8  px-2">
         <Offers />
       </div>
@@ -59,7 +53,7 @@ const Home = () => {
       <div className="px-2">
         <AppDownloadWrapper />
       </div>
-      <div className="mt-6 lg:mt-20 px-2">
+      <div className="mt-8 lg:mt-20 px-2">
         <TripIdeaSlider />
       </div>
       <div className="px-2">

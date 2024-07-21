@@ -1,11 +1,11 @@
 import React from 'react';
-import Home from './pages/Home';
-import './App.css';
-import toast, { Toaster } from 'react-hot-toast';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Use Routes instead of Switch
-import SearchResult from './pages/FlightDetails';
-import Dashboard from './pages/Dashboard';
+import { Toaster } from 'react-hot-toast';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'; // Use Routes instead of Switch
 import UnauthorizedAccess from './actions/UnauthorizedAccess'; // Import unauthorized access component
+import './App.css';
+import Dashboard from './pages/Dashboard';
+import SearchResult from './pages/FlightDetails';
+import Home from './pages/Home';
 
 function App() {
   return (
