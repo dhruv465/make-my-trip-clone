@@ -2,8 +2,8 @@ import React from 'react';
 
 const Offers = () => {
     return (
-        <div className="flex justify-center items-center p-2 mx-3">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-6xl mx-auto lg:mt-14 mt-72">
+        <div className="flex justify-center items-center p-2 mx-3 lg:mt-48">
+            <div className="bg-white rounded-lg drop-shadow-xl p-6 w-full max-w-6xl mx-auto ">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-3xl font-bold text-gray-800">Offers</h2>
                     <a href="/" className="text-blue-500 font-semibold flex items-center">

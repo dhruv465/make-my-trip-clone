@@ -1,15 +1,15 @@
+import axios from 'axios';
+import { addDays } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { MdFlightTakeoff } from 'react-icons/md';
-import { LiaHotelSolid, LiaTrainSolid, LiaBusSolid, LiaCarSolid } from 'react-icons/lia';
-import { MdMapsHomeWork } from 'react-icons/md';
-import { TbBeach } from 'react-icons/tb';
 import { CiMedicalClipboard } from 'react-icons/ci';
+import { LiaBusSolid, LiaCarSolid, LiaHotelSolid, LiaTrainSolid } from 'react-icons/lia';
+import { MdFlightTakeoff, MdMapsHomeWork } from 'react-icons/md';
 import { RiCurrencyLine } from 'react-icons/ri';
-import { IoIosArrowDown } from 'react-icons/io';
+import { TbBeach } from 'react-icons/tb';
+import { useNavigate } from 'react-router-dom';
+
 
 const SearchForm = () => {
   const [selectedFare, setSelectedFare] = useState(null);
@@ -69,13 +69,14 @@ const SearchForm = () => {
 
   const handleDepartureDateChange = (date) => {
     setDepartureDate(date);
-    setReturnDate(null);
+    if (date >= returnDate) {
+      setReturnDate(addDays(date, 1));
+    }
   };
 
   const handleReturnDateChange = (date) => {
     setReturnDate(date);
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -183,6 +184,7 @@ const SearchForm = () => {
                   selected={departureDate}
                   onChange={handleDepartureDateChange}
                   className="border-none w-full focus:outline-none text-xl font-bold"
+                  minDate={new Date()}
                 />
                 <div className="text-sm text-gray-500">Select a date</div>
               </div>
@@ -194,7 +196,7 @@ const SearchForm = () => {
                   selected={returnDate}
                   onChange={handleReturnDateChange}
                   className="border-none w-full focus:outline-none text-xl font-bold"
-                  minDate={new Date(departureDate.getTime() + 24 * 60 * 60 * 1000)}
+                  minDate={addDays(departureDate, 1)}
                 />
                 <div className="text-sm text-gray-500">Select a return date</div>
               </div>

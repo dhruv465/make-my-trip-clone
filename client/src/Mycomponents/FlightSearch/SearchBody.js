@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { RxCrossCircled } from "react-icons/rx";
-import UserLogIn from '../../modals/UserLogIn';
-import BookingModal from '../../modals/BookingModal';
-import toast from 'react-hot-toast';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { RxCrossCircled } from "react-icons/rx";
 import { useLocation } from 'react-router-dom';
+import BookingModal from '../../modals/BookingModal';
+import UserLogIn from '../../modals/UserLogIn';
 
 const SearchBody = () => {
   const [flights, setFlights] = useState([]);
@@ -50,7 +50,8 @@ const SearchBody = () => {
 
     const filtered = flights.filter(flight =>
       (!departureCity || flight.departureCity === departureCity) &&
-      (!destinationCity || flight.destinationCity === destinationCity)
+      (!destinationCity || flight.destinationCity === destinationCity) 
+      
     );
 
     setFilteredFlights(filtered);
@@ -175,7 +176,6 @@ const SearchBody = () => {
     </div>
   );
 
-
   const headingText = departureCity && destinationCity
     ? `Flights from ${departureCity} to ${destinationCity}`
     : 'Flight Details';
@@ -239,25 +239,31 @@ const SearchBody = () => {
             <div className="lg:w-4/5">
               <div className="grid md:grid-cols-1 gap-4">
                 <div>
-                  {filteredFlights.map(flight => (
-                    <FlightCard
-                      key={flight._id}
-                      flight={{
-                        _id: flight._id,
-                        airline: "Akasa Air",
-                        departure: { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), city: flight.departureCity },
-                        arrival: {
-                          time: new Date(new Date().getTime() + Math.random() * (5 * 60 * 60 * 1000)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                          city: flight.destinationCity,
-                          nextDay: Math.random() > 0.5
-                        },
-                        duration: `${Math.floor(Math.random() * 5) + 1}h ${Math.floor(Math.random() * 59) + 1}m`,
-                        price: flight.price,
-                        stops: "1 stop via Ahme...",
-                        departureDate: flight.departureDate // Add this line
-                      }}
-                    />
-                  ))}
+                  {filteredFlights.length > 0 ? (
+                    filteredFlights.map(flight => (
+                      <FlightCard
+                        key={flight._id}
+                        flight={{
+                          _id: flight._id,
+                          airline: "Akasa Air",
+                          departure: { time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), city: flight.departureCity },
+                          arrival: {
+                            time: new Date(new Date().getTime() + Math.random() * (5 * 60 * 60 * 1000)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            city: flight.destinationCity,
+                            nextDay: Math.random() > 0.5
+                          },
+                          duration: `${Math.floor(Math.random() * 5) + 1}h ${Math.floor(Math.random() * 59) + 1}m`,
+                          price: flight.price,
+                          stops: "1 stop via Ahme...",
+                          departureDate: flight.departureDate 
+                        }}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500 text-lg h-56 content-center">
+                      No flights found
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

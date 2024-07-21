@@ -6,8 +6,8 @@ import UserProfileCard from '../Mycomponents/Dashboard/UserProfileCard';
 
 const Dashboard = () => {
 
-  
-  
+
+
   const navigate = useNavigate(); // Get the navigate function
 
   useEffect(() => {
@@ -29,7 +29,6 @@ const Dashboard = () => {
   return (
     <div>
       <Header />
-
       <div className="container mx-auto mt-8 p-4">
         <div className="flex flex-col lg:flex-row lg:justify-center lg:space-x-8">
           <div className="w-full lg:w-1/4 mb-8 lg:mb-0">

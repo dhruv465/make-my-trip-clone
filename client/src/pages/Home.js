@@ -8,6 +8,7 @@ import Offers from '../Mycomponents/Home/Offers';
 import Footer from '../Mycomponents/Home/Footer';
 import FAQSection from '../Mycomponents/Home/FAQSection';
 import AppDownloadWrapper from '../Mycomponents/Home/AppDownloadWrapper';
+import TripIdeaSlider from '../Mycomponents/Home/TripIdeaSlider';
 
 
 const Home = () => {
@@ -39,25 +40,32 @@ const Home = () => {
 
       <div className="relative lg:flex lg:justify-center lg:mb-24">
         <img src={bgImg} className="w-full" alt="Background" />
-        <div className="lg:absolute lg:-top-16 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-full  px-4">
+        <div className="lg:absolute lg:-top-16 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-full  px-2">
           <SearchForm setFilteredFlights={setFilteredFlights} />
         </div>
       </div>
+      {/* <div>
+        <div className="px-2 z-50">
+          <Explore />
+        </div>
+      </div> */}
 
-
-      <div className="mt-8 lg:mt-0">
+      <div className="mt-8  px-2">
         <Offers />
       </div>
-      <div>
+      <div className="px-2">
         <Promotions />
       </div>
-      <div>
+      <div className="px-2">
         <AppDownloadWrapper />
       </div>
-      <div>
+      <div className="mt-6 lg:mt-20 px-2">
+        <TripIdeaSlider />
+      </div>
+      <div className="px-2">
         <Footer />
       </div>
-      <div>
+      <div className="px-2">
         <FAQSection />
       </div>
     </div>

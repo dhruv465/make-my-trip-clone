@@ -6,7 +6,6 @@ const uuid = require('uuid').v4;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const { sendVerificationEmail } = require('../services/emailService');
 const { OAuth2Client } = require('google-auth-library');
 const router = express.Router();
 const Flight = require('../models/Flight');
@@ -192,40 +191,40 @@ router.get('/user', authenticateJWT, async (req, res) => {
     }
 });
 
-// POST /api/flights
-router.get('/flights', async (req, res) => {
-    const { departureCity, destinationCity, departureDate, returnDate } = req.query;
+// // POST /api/flights
+// router.get('/flights', async (req, res) => {
+//     const { departureCity, destinationCity, departureDate, returnDate } = req.query;
 
-    try {
-        let query = {
-            departureCity: { $regex: new RegExp(departureCity, 'i') },
-            destinationCity: { $regex: new RegExp(destinationCity, 'i') }
-        };
+//     try {
+//         let query = {
+//             departureCity: { $regex: new RegExp(departureCity, 'i') },
+//             destinationCity: { $regex: new RegExp(destinationCity, 'i') }
+//         };
 
 
-        const parsedDepartureDate = departureDate ? new Date(departureDate) : null;
-        const parsedReturnDate = returnDate ? new Date(returnDate) : null;
+//         const parsedDepartureDate = departureDate ? new Date(departureDate) : null;
+//         const parsedReturnDate = returnDate ? new Date(returnDate) : null;
 
-        if (parsedDepartureDate) {
+//         if (parsedDepartureDate) {
 
-            parsedDepartureDate.setUTCHours(0, 0, 0, 0);
-            query.departureDate = { $gte: parsedDepartureDate };
-        }
+//             parsedDepartureDate.setUTCHours(0, 0, 0, 0);
+//             query.departureDate = { $gte: parsedDepartureDate };
+//         }
 
-        if (parsedReturnDate) {
+//         if (parsedReturnDate) {
 
-            parsedReturnDate.setUTCHours(23, 59, 59, 999);
-            query.returnDate = { $lte: parsedReturnDate };
-        }
+//             parsedReturnDate.setUTCHours(23, 59, 59, 999);
+//             query.returnDate = { $lte: parsedReturnDate };
+//         }
 
-        const flights = await Flight.find(query);
+//         const flights = await Flight.find(query);
 
-        res.json(flights);
-    } catch (error) {
-        console.error('Error fetching flights:', error);
-        res.status(500).json({ error: 'Failed to fetch flights' });
-    }
-});
+//         res.json(flights);
+//     } catch (error) {
+//         console.error('Error fetching flights:', error);
+//         res.status(500).json({ error: 'Failed to fetch flights' });
+//     }
+// });
 
 // Route to get all flight details
 router.get('/flights', async (req, res) => {
@@ -238,38 +237,6 @@ router.get('/flights', async (req, res) => {
 });
 
 
-// Search flights endpoint
-router.get('/searchFlights', async (req, res) => {
-    try {
-        const { departureCity, destinationCity, departureDate, returnDate, selectedFare } = req.query;
-
-
-        let query = {
-            departureCity: departureCity ? new RegExp(departureCity, 'i') : undefined,
-            destinationCity: destinationCity ? new RegExp(destinationCity, 'i') : undefined,
-        };
-
-        if (departureDate) {
-            query.departureDate = { $gte: new Date(departureDate) };
-        }
-
-        if (returnDate) {
-            query.returnDate = { $gte: new Date(returnDate) };
-        }
-
-        if (selectedFare) {
-            query.classSelection = { $regex: new RegExp(selectedFare, 'i') };
-        }
-
-
-        Object.keys(query).forEach(key => query[key] === undefined && delete query[key]);
-
-        const flights = await Flight.find(query);
-        res.json(flights);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching flights', error });
-    }
-});
 
 
 
@@ -289,7 +256,7 @@ router.post('/bookings', authenticateJWT, async (req, res) => {
         res.status(201).json({ message: 'Your flight booked successfully' });
     } catch (error) {
         console.error('Error creating booking:', error);
-        res.status(500).json({ message: 'Failed to create booking' });
+        res.status(500).json({ message: 'Failed to create booking, Please Check if your login or not' });
     }
 });
 
